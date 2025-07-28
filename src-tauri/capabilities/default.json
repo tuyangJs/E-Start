@@ -1,0 +1,73 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "core:window:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-hide",
+    "core:window:allow-show",
+    "core:window:allow-close",
+    "core:window:allow-destroy",
+    "core:window:allow-minimize",
+    "core:webview:allow-webview-hide",
+    "core:webview:allow-webview-show",
+    "core:window:allow-set-decorations",
+    "core:window:allow-set-title",
+    "core:window:allow-set-effects",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "window-state:allow-save-window-state",
+    "log:default",
+    "fs:allow-stat",
+    "fs:allow-read",
+    "fs:read-all",
+    "fs:write-all",
+    {
+      "identifier": "http:default",
+      "all": false,
+      "allow": [
+        {
+          "url": "http://**"
+        },
+        {
+          "url": "https://**"
+        }
+      ],
+      "deny": []
+    },
+    {
+      "identifier": "fs:default",
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
+    },
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "ms-windows-store://*"
+        },
+        {
+          "url": "ms-settings:*"
+        },
+        {
+          "url": "https://apps.microsoft.com/*"
+        }
+      ]
+    },
+    "dialog:allow-open",
+    "dialog:default",
+    "core:window:allow-set-theme"
+  ]
+}

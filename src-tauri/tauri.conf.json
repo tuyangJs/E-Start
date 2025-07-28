@@ -1,0 +1,64 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "易语言项目管理器",
+  "identifier": "com.E-Manager.cn",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "易语言项目管理器",
+        "label": "main",
+        "windowEffects": {
+          "color": "#00000000",
+          "effects": []
+        },
+        "decorations": false,
+        "transparent": true,
+        "hiddenTitle": true,
+        "center": true,
+        "dragDropEnabled": false,
+        "minHeight": 500,
+        "minWidth": 622,
+        "width": 980,
+        "height": 622
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {
+    "autostart": null
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      
+    ],
+    "copyright": "Copyright © 2025 Tuyang All",
+    "homepage": "https://github.com/tuyangJs/Windows_AutoTheme",
+    "windows": {
+      "nsis": {
+        "languages": [
+          "SimpChinese"
+        ],
+        "installerIcon": "icons/installer.ico",
+        "installMode": "both",
+        "displayLanguageSelector": true
+      }
+    },
+    "icon": [
+      "icons/icon.png"
+    ],
+    "resources": [
+      "E_dev" 
+    ]
+  }
+  
+}
