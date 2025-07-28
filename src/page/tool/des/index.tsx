@@ -133,8 +133,6 @@ export const CryptoTool: React.FC = () => {
 
     return (
         <Space direction="vertical" style={{ width: '100%' }} size="large">
-            <Title level={4}>加解密 & 编码转换工具</Title>
-
             {/* 方法选择 & 编/解密切换 */}
             <Row gutter={16} align="middle" justify='center'>
                 <Col>

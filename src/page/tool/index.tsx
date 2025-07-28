@@ -35,7 +35,7 @@ const items: TabsProps['items'] = [
     },
     {
         key: '5',
-        label: 'QR生成',
+        label: 'QR码生成',
         children: <QRCodeGenerator />,
     },
 ];

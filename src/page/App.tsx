@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TitleBar from "@/TitleBar";
 import "./App.css";
 import { ConfigProvider, Layout, Modal, Typography } from "antd";
@@ -42,8 +42,6 @@ function App() {
     const expiry = dayjs(targetDate).startOf('day');
     setExpire(expiry.isSame(today))
   }
-  console.log(expire, inMsix);
-
   //设置窗口材料
   useAsyncEffect(async () => {
     if (loading) return
@@ -73,7 +71,12 @@ function App() {
     matchMedia.addEventListener('change', handleChange);
     checkDateStatus()
   }, [loading])
+  //同步窗口标题
 
+  useEffect(() => {
+    const appWindow = window.appWindow
+    appWindow.setTitle(document.title)
+  }, [document.title])
   const { Themeconfig, antdToken } = ThemeFun(themeDack, 'Acrylic')
   return (
     <ConfigProvider
@@ -93,7 +96,6 @@ function App() {
           config={antdToken}
           Themeconfig={Themeconfig}
           themeDack={themeDack}
-          eFiles={eFiles}
           loading={loading}
         />
         <Layout style={{

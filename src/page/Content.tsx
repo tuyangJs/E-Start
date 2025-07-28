@@ -7,6 +7,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MacScrollbar } from "mac-scrollbar";
 import "mac-scrollbar/dist/mac-scrollbar.css";
 import { useEffect, useRef } from "react";
+import { useMsStoreApp } from "@/mod/useMsStoreApp";
+import { getLabelByValue } from "@/TitleBar/Navigation";
 
 const springElastic = {
   type: "spring",
@@ -62,10 +64,14 @@ const RouteWrapper = ({ children, themeDack }: RouteWrapperProps) => {
 export interface PageRouterProps {
   themeDack: boolean;
 }
-
 export default function PageRouter({ themeDack }: PageRouterProps) {
   const location = useLocation();
-
+  const { info } = useMsStoreApp(
+    '9N2RQBRN2TRF', 'US', 'zh-CN', 'zh-CN', 'Windows.Desktop', false
+  );
+  useEffect(() => {
+    document.title = `${(info?.ProductTitle || '易语言项目管理器')} - ${getLabelByValue(location.pathname)}`
+  }, [location,info]);
   return (
     <AnimatePresence mode="sync">
       <motion.div

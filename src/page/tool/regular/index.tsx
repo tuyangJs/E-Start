@@ -88,8 +88,6 @@ export const RegexTester: React.FC = () => {
 
   return (
     <Space direction="vertical" style={{ width: '100%' }} size="large">
-      <Title level={4}>正则表达式测试工具</Title>
-
       {/* 模式切换 */}
       <Radio.Group value={mode} onChange={e => setMode(e.target.value)}>
         <Radio.Button value="match">匹配模式</Radio.Button>

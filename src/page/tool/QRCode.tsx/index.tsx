@@ -87,8 +87,6 @@ export const QRCodeGenerator: React.FC = () => {
 
     return (
         <div style={{ maxWidth: 1200, margin: 'auto', padding: 24 }}>
-            <Title level={4} style={{ textAlign: 'center', margin: 0 }}>二维码生成器</Title>
-
             <Row gutter={24}>
                 {/* 左侧二维码显示区域 */}
                 <Col xs={24} md={12}>

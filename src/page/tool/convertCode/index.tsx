@@ -90,7 +90,6 @@ export const ConvertCode: React.FC = () => {
 
     return (
         <Space direction="vertical" style={{ width: '100%' }} size="large">
-            <Title level={4}>编码转换工具</Title>
 
             <Select value={type} onChange={(val) => setType(val)} style={{ width: 240 }}>
                 <Option value="chinese-to-unicode">中文 → Unicode</Option>
