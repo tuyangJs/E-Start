@@ -49,17 +49,14 @@ export const QRCodeGenerator: React.FC = () => {
         a.click();
         document.body.removeChild(a);
     }
-
     const handleDownload = () => {
         const container = qrRef.current;
         if (!container) {
             message.error('二维码未生成');
             return;
         }
-
         let downloadUrl: string;
         let filename: string;
-
         if (renderType === 'Png') {
             // PNG 格式：从 canvas 获取 base64 数据
             const canvas = container.querySelector<HTMLCanvasElement>('canvas');
