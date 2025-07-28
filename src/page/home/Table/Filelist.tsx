@@ -133,7 +133,6 @@ const App: React.FC<Props> = ({ setExpandFile, expandFile }) => {
     const actions = () => [
         <motion.div
             key="a"
-            layout
             initial={{ width: 86 }}
             animate={{ width: isExpanded ? 200 : 86 }}
             transition={{
@@ -209,7 +208,7 @@ const App: React.FC<Props> = ({ setExpandFile, expandFile }) => {
                 //找到标题
                 headerTitle={
                     <AnimatePresence mode="wait">
-                        <motion.div style={{ display: "inline-block" }}>
+                        <motion.div style={{ display: "inline-block" }} >
                             {Array.from(getLabelByKey(Tabs) || "").map((letter, index) => (
                                 <motion.span
                                     key={index}
@@ -248,7 +247,7 @@ const App: React.FC<Props> = ({ setExpandFile, expandFile }) => {
                         items: tabitems,
                     },
                     actions:
-                        [<AnimatePresence>
+                        [<AnimatePresence mode="sync">
                             {actions().map((action) => (
                                 <motion.div
                                     layout

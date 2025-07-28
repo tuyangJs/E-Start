@@ -87,17 +87,12 @@ const Content: React.FC<props> = () => {
                         <motion.div
                             key="button-group"
                             {...buttonGroupAnimation}
-                            style={{
-                                position: "relative",
-                                zIndex: 2,
-                                overflow: "hidden",
-                            }}
                         >
                             <Flex
                                 vertical
                                 align="flex-end"
                                 justify="space-between"
-                                gap={8}
+                                gap={16}
                                 style={{
                                     height: "100%",
                                     width: 320,
@@ -106,7 +101,7 @@ const Content: React.FC<props> = () => {
                                 {openBtn.map((item, index) => (
                                     <div key={index}>
                                         {index === 1 && (
-                                            <Divider key={"d-" + index} style={{ margin: 0 }}>
+                                            <Divider key={"d-" + index}>
                                                 创建项目
                                             </Divider>
                                         )}

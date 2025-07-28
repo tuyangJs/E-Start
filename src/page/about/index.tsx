@@ -24,7 +24,6 @@ const AboutCard: React.FC = () => {
         true
 
     );
-    console.log(info);
     
     const [expanded, setExpanded] = useState(false);
     const [appVersion, setAppVersion] = useState<string>('—');
