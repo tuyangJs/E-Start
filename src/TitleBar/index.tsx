@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import {
     Button, Divider, Flex, Segmented,
+    Space,
     ThemeConfig
 } from 'antd';
 import { theme } from "antd";
 
 import { restoreStateCurrent, StateFlags } from '@tauri-apps/plugin-window-state';
-
+import { useLocation, useNavigate } from 'react-router-dom';
 import usePageTitle from '@/mod/PageTitle';
 import { useAsyncEffect, useRequest } from 'ahooks';
 import { motion } from 'framer-motion';
@@ -15,6 +16,7 @@ import { TitleButton } from './TitleButton';
 import { Navigation } from './Navigation';
 import { LogoTile } from './LogoTitle';
 import { AppSetStore } from '@/mod/store';
+import { useNavigationState } from './useNavigationState';
 
 const config = theme.getDesignToken()
 interface Props {
@@ -38,6 +40,7 @@ const upWindowTitle = async (PageTitle: string) => {
 };
 let times: any = null
 const App: React.FC<Props> = ({ themeDack, loading }) => {
+    const navigate = useNavigate();
     const { TouchTitleBtn } = AppSetStore()
     const [isMaximized, setisMaximized] = useState(false)
     const [hoverBtn, setHoverBtn] = useState(!TouchTitleBtn);
@@ -45,7 +48,8 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
     const BUTTON_SIZE = 32; // 单个按钮估算宽度（含 padding/margin）
     const FULL_WIDTH = FULL_BTN_COUNT * BUTTON_SIZE + (FULL_BTN_COUNT - 1) * 4;
     const COLLAPSED_WIDTH = BUTTON_SIZE; // 只留一个占位符
-    useEffect(() => { 
+
+    useEffect(() => {
         setHoverBtn(!TouchTitleBtn);
     }, [TouchTitleBtn])
     useEffect(() => {
@@ -85,14 +89,14 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
             className="drag-region header_s"
             gap="small"
             justify='space-between'
-            data-tauri-drag-region
-
         >
             <LogoTile loading={loading} />
             {/* 中间导航 Segmented */}
-            <Flex justify='center' style={{ width: '100%', position: "absolute", }} >
-                <Navigation style={{ boxShadow: config?.boxShadowSecondary }} />
-            </Flex>
+            {
+                !loading &&
+                <Flex justify='center' style={{ width: '100%', position: "absolute" }} >
+                    <Navigation style={{ boxShadow: config?.boxShadowSecondary }} />
+                </Flex>}
 
             {/* 右侧主题切换 + 窗口控制 */}
             <Flex
@@ -101,7 +105,7 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                 justify='flex-end'
                 style={{ width: "100%", height: 32 }}>
                 <Segmented
-                    className='vague'
+                    className='no-drag vague'
                     shape="round"
                     style={{ boxShadow: config?.boxShadowSecondary }}
                     block
@@ -143,7 +147,7 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                                 <React.Fragment key={i}>
                                     {i > 0 && <Divider type='vertical' style={{ margin: '0 4px' }} />}
                                     <Button
-                                        className='titlebar ant-segmented-item-label'
+                                        className='no-drag titlebar ant-segmented-item-label'
                                         variant="text"
                                         size='small'
                                         {...item}
@@ -152,7 +156,7 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                             ))
                             : // 折叠：只渲染第一个按钮占位
                             <Button
-                                className='titlebar ant-segmented-item-label'
+                                className='no-drag titlebar ant-segmented-item-label'
                                 variant="text"
                                 size='small'
                                 {...TitleButton(isMaximized)[2]}
