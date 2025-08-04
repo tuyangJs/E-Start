@@ -1,9 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
-import path from 'path' 
+import path from 'path'
 const host = process.env.TAURI_DEV_HOST;
-console.log(22,path.resolve(__dirname, 'src'));
+console.log(22, path.resolve(__dirname, 'src'));
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -37,5 +37,12 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
-
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+        modifyVars: {},
+      },
+    },
+  },
 }));

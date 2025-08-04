@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { TentativeStore } from '@/mod/store';
 
 interface Props {
     loading: boolean;
@@ -8,7 +9,7 @@ interface Props {
 
 }
 const App: React.FC<Props> = ({ loading, Logosvg }) => {
-
+    const { Themeconfig } = TentativeStore()
     return (
         <LayoutGroup>
             {/* 全屏加载动画 */}
@@ -46,6 +47,7 @@ const App: React.FC<Props> = ({ loading, Logosvg }) => {
                             layoutId="logo"
                             initial={{ scale: 1 }}
                             animate={{ scale: [1, 1.2, 1] }}
+                            style={{ color: Themeconfig?.token?.colorPrimary }}
                             transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
                         >
                             <Logosvg width={128} height={128} />
@@ -55,7 +57,10 @@ const App: React.FC<Props> = ({ loading, Logosvg }) => {
             </AnimatePresence>
             {/* 正常头部 */}
             {!loading && (
-                <motion.div className="logo" layoutId="logo">
+                <motion.div
+                    className="logo"
+                    style={{ color: Themeconfig?.token?.colorPrimary }}
+                    layoutId="logo">
                     <Logosvg className="logo" />
                 </motion.div>
             )}

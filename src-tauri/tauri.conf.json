@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "易语言项目管理器",
+  "productName": "E-Manager",
   "identifier": "com.E-Manager.cn",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -12,7 +12,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "易语言项目管理器",
+        "title": "易码助手",
         "label": "main",
         "windowEffects": {
           "color": "#00000000",
@@ -23,9 +23,9 @@
         "hiddenTitle": true,
         "center": true,
         "dragDropEnabled": false,
-        "minHeight": 500,
+        "minHeight": 462,
         "minWidth": 622,
-        "width": 980,
+        "width": 992,
         "height": 622
       }
     ],

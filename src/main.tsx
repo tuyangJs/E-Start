@@ -11,19 +11,6 @@ document.addEventListener('keydown', function (e) {
 
 document.addEventListener('contextmenu', function (e) {
   const target = e.target as HTMLElement;
-
-  // 1. 如果页面有选中文本，放行，允许右键菜单
-  const selection = window.getSelection?.();
-  if (selection) {
-    const selectedText = selection.toString();
-    console.log('selectedText', selectedText);
-    
-    if (selectedText !== '') {
-      // 只有当选中的文本非空时，允许右键菜单
-      return;
-    }
-  }
-
   // 2. 如果 className 中包含 no-menu，阻止右键菜单
   if (target?.classList?.contains('no-menu')) {
     e.preventDefault();
@@ -38,6 +25,7 @@ document.addEventListener('contextmenu', function (e) {
   if (tag === 'textarea') {
     return;
   }
+
 
   // 其它情况统一禁用右键菜单
   e.preventDefault();

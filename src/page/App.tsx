@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import TitleBar from "@/TitleBar";
-import "./App.css";
-import { ConfigProvider, Layout, Modal, Typography } from "antd";
+
+import { ConfigProvider, Layout, Modal, theme, Typography } from "antd";
 import { isWin11, ThemeFun } from '@/mod/ThemeConfig'
 import { WindowBg } from "@/mod/WindowCode";
 import { invoke } from "@tauri-apps/api/core";
 import { GetFileinfo, getParentPath } from "@/mod/FileGet";
 import { Window } from '@tauri-apps/api/window';
-import { AppMainStore } from "@/mod/store";
+import { AppMainStore, AppSetStore, TentativeStore } from "@/mod/store";
 import { useAsyncEffect } from "ahooks";
 import dayjs from "dayjs";
 import zhCN from 'antd/locale/zh_CN';
@@ -15,9 +15,10 @@ import BlurredBackground from "@/mod/BlurredBackground";
 import { StoreCode } from "@/code";
 import PageRouter from "./Content";
 import { BrowserRouter } from "react-router-dom";
+import "./App.less";
 const { Paragraph, Text, Title } = Typography;
 const { Content } = Layout;
-
+    const config = theme.getDesignToken()
 window.appWindow = new Window('main');
 const matchMedia = window.matchMedia('(prefers-color-scheme: light)');
 const inMsix = await invoke<boolean>('is_running_in_msix');
@@ -28,6 +29,9 @@ function App() {
   const { setAppMain, eFiles } = AppMainStore()
   const [themeDack, setThemeDack] = useState(!matchMedia.matches);
   const [expire, setExpire] = useState(isDebug ? false : !inMsix);
+  const { setTentative, Themeconfig } = TentativeStore()
+
+
   const handleOk = () => {
     location.reload();    // 重新加载当前页面
   };
@@ -37,7 +41,7 @@ function App() {
   };
   function checkDateStatus() {
     if (!inMsix) return
-    const targetDate = dayjs('2025-9-01');
+    const targetDate = dayjs('2025-11-01');
     const today = dayjs().startOf('day');
     const expiry = dayjs(targetDate).startOf('day');
     setExpire(expiry.isSame(today))
@@ -72,12 +76,17 @@ function App() {
     checkDateStatus()
   }, [loading])
   //同步窗口标题
+  const { primaryColor, fontFamily } = AppSetStore()
+
 
   useEffect(() => {
-    const appWindow = window.appWindow
-    appWindow.setTitle(document.title)
-  }, [document.title])
-  const { Themeconfig, antdToken } = ThemeFun(themeDack, 'Acrylic')
+    const thems = ThemeFun(themeDack, 'Acrylic', {
+      colorPrimary: primaryColor,
+      fontFamily: `'${fontFamily}',${config.fontFamily}`
+    })
+    setTentative({ Themeconfig: thems })
+  }, [themeDack, primaryColor, fontFamily, setTentative])
+
   return (
     <ConfigProvider
       theme={Themeconfig}
@@ -93,7 +102,6 @@ function App() {
 
       <BrowserRouter>
         <TitleBar
-          config={antdToken}
           Themeconfig={Themeconfig}
           themeDack={themeDack}
           loading={loading}

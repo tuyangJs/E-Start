@@ -1,14 +1,14 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import HomePage from "./home";
 import LinkPage from "@/page/linkLite";
-import About from "@/page/about";
+import SettingsPage from "@/page/settings";
 import { ToolPage } from "./tool";
 import { AnimatePresence, motion } from "framer-motion";
-import { MacScrollbar } from "mac-scrollbar";
 import "mac-scrollbar/dist/mac-scrollbar.css";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useMsStoreApp } from "@/mod/useMsStoreApp";
 import { getLabelByValue } from "@/TitleBar/Navigation";
+import { RouteWrapper } from "@/mod/RouteWrapper";
 
 const springElastic = {
   type: "spring",
@@ -31,47 +31,18 @@ const variants = {
     transition: springElastic,
   },
 };
-export interface RouteWrapperProps {
-  children: React.ReactNode
-  themeDack: boolean;
-}
-const RouteWrapper = ({ children, themeDack }: RouteWrapperProps) => {
-  const scrollRef = useRef<any>(null);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0;
-    }
-  }, [children]);
-
-  return (
-    <MacScrollbar
-      skin={themeDack ? "dark" : "light"}
-      className="scroll-container content"
-      suppressScrollX
-      style={{
-        zIndex: 0,
-        width: "100%",
-        height: "100vh",
-        position: "relative",
-      }}
-      ref={scrollRef}
-    >
-      <div style={{ paddingInline: 12, paddingTop: 50 }}>{children}</div>
-    </MacScrollbar>
-  );
-};
 export interface PageRouterProps {
   themeDack: boolean;
 }
 export default function PageRouter({ themeDack }: PageRouterProps) {
   const location = useLocation();
   const { info } = useMsStoreApp(
-    '9N2RQBRN2TRF', 'US', 'zh-CN', 'zh-CN', 'Windows.Desktop', false
+    '9N2RQBRN2TRF', 'US', 'zh-CN', 'zh-CN', 'Windows.Desktop', true
   );
   useEffect(() => {
     document.title = `${(info?.ProductTitle || '易语言项目管理器')} - ${getLabelByValue(location.pathname)}`
-  }, [location,info]);
+  }, [location, info]);
   return (
     <AnimatePresence mode="sync">
       <motion.div
@@ -88,11 +59,11 @@ export default function PageRouter({ themeDack }: PageRouterProps) {
           left: 0,
         }}
       >
-        <RouteWrapper themeDack={themeDack}>
+        <RouteWrapper themeDack={themeDack} style={{ paddingInline: 12, paddingTop: 50 }}>
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<HomePage />} />
             <Route path="/nav" element={<LinkPage />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/set" element={<SettingsPage />} />
             <Route path="/tool" element={<ToolPage />} />
             <Route path="*" element={<HomePage />} />
           </Routes>

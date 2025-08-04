@@ -8,7 +8,7 @@ export const NavigationItem = [
     { value: '/', label: '首页' },
     { value: '/nav', label: '快捷导航' },
     { value: '/tool', label: '工具' },
-    { value: '/about', label: '关于' },
+    { value: '/set', label: '设置' },
 ]
 /**
  * 根据 value 获取对应的 label

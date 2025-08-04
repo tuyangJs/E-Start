@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
 import {
     Button, Divider, Flex, Segmented,
-    ThemeConfig} from 'antd';
-import { AliasToken } from 'antd/es/theme/internal';
+    ThemeConfig
+} from 'antd';
+import { theme } from "antd";
 
 import { restoreStateCurrent, StateFlags } from '@tauri-apps/plugin-window-state';
 
@@ -13,10 +14,10 @@ import { motion } from 'framer-motion';
 import { TitleButton } from './TitleButton';
 import { Navigation } from './Navigation';
 import { LogoTile } from './LogoTitle';
+import { AppSetStore } from '@/mod/store';
 
-
+const config = theme.getDesignToken()
 interface Props {
-    config: AliasToken;
     themeDack: boolean;
     Themeconfig: ThemeConfig;
     loading: boolean;
@@ -36,15 +37,17 @@ const upWindowTitle = async (PageTitle: string) => {
     }
 };
 let times: any = null
-const App: React.FC<Props> = ({ config, themeDack, loading }) => {
-
+const App: React.FC<Props> = ({ themeDack, loading }) => {
+    const { TouchTitleBtn } = AppSetStore()
     const [isMaximized, setisMaximized] = useState(false)
-
-    const [hoverBtn, setHoverBtn] = useState(false);
+    const [hoverBtn, setHoverBtn] = useState(!TouchTitleBtn);
     const FULL_BTN_COUNT = TitleButton(isMaximized).length;
     const BUTTON_SIZE = 32; // 单个按钮估算宽度（含 padding/margin）
     const FULL_WIDTH = FULL_BTN_COUNT * BUTTON_SIZE + (FULL_BTN_COUNT - 1) * 4;
     const COLLAPSED_WIDTH = BUTTON_SIZE; // 只留一个占位符
+    useEffect(() => { 
+        setHoverBtn(!TouchTitleBtn);
+    }, [TouchTitleBtn])
     useEffect(() => {
         const appWindow = window.appWindow
         const fetchWindowData = async () => {
@@ -61,8 +64,6 @@ const App: React.FC<Props> = ({ config, themeDack, loading }) => {
             });
         }, 500);
     }, []);
- 
-
 
     const PageTitle = usePageTitle();
     const { run } = useRequest(upWindowTitle, {
@@ -87,9 +88,9 @@ const App: React.FC<Props> = ({ config, themeDack, loading }) => {
             data-tauri-drag-region
 
         >
-           <LogoTile loading={loading} />
+            <LogoTile loading={loading} />
             {/* 中间导航 Segmented */}
-            <Flex justify='center' style={{ width: '100%', position: "absolute", }}>
+            <Flex justify='center' style={{ width: '100%', position: "absolute", }} >
                 <Navigation style={{ boxShadow: config?.boxShadowSecondary }} />
             </Flex>
 
@@ -116,7 +117,7 @@ const App: React.FC<Props> = ({ config, themeDack, loading }) => {
                     className='ant-segmented ant-segmented-shape-round vague'
                     align='center'
                     onMouseEnter={() => setHoverBtn(true)}
-                    onMouseLeave={() => setHoverBtn(false)}
+                    onMouseLeave={() => setHoverBtn(!TouchTitleBtn)}
                     style={{
                         boxShadow: config?.boxShadowSecondary
                     }}
@@ -136,7 +137,7 @@ const App: React.FC<Props> = ({ config, themeDack, loading }) => {
                             alignItems: 'center',
                         }}
                     >
-                        {hoverBtn
+                        {(hoverBtn)
                             ? // 展开：渲染所有按钮
                             TitleButton(isMaximized).map((item, i) => (
                                 <React.Fragment key={i}>

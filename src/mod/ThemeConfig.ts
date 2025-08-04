@@ -21,10 +21,11 @@ import { AppDataType } from "../Type";
 } */
 
 
-const isWin11 =false  //await isWindows11()
+const isWin11 = false  //await isWindows11()
 
 
-const ThemeFun = (themeDack: boolean, winBgEffect: AppDataType['winBgEffect'] | undefined) => {
+const ThemeFun = (themeDack: boolean, winBgEffect: AppDataType['winBgEffect'] | undefined, ThemeToken?: ThemeConfig['token']) => {
+
     //背景渲染
     let BgLayout = 'transparent'
     let headerBg = themeDack ? '#22222280' : '#ffffff4d'
@@ -40,7 +41,7 @@ const ThemeFun = (themeDack: boolean, winBgEffect: AppDataType['winBgEffect'] | 
             break
     }
     //主题渲染配置
-    const Themeconfig: ThemeConfig = useMemo(() => ({
+    const Themeconfig: ThemeConfig = {
         algorithm: themeDack ? theme.darkAlgorithm : theme.defaultAlgorithm,
         components: {
             Divider: {
@@ -52,21 +53,27 @@ const ThemeFun = (themeDack: boolean, winBgEffect: AppDataType['winBgEffect'] | 
             },
             Layout: {
                 headerBg: headerBg,
+                siderBg: 'transparent'
+            },
+            Menu: {
+                itemBg: 'transparent'
             }
         },
         token: {
-            borderRadius:14,
-            borderRadiusOuter:16,
-            colorPrimary: '#ff8c00',
+            borderRadius: 14,
+            borderRadiusOuter: 16,
+            colorPrimary: ThemeToken?.colorPrimary || '#ff8c00',
             colorBgLayout: BgLayout,
             colorBgBase: themeDack ? '#00000096' : '#ffffff96',
             colorBorder: themeDack ? '#87878796' : '#bfbfbf96',
             colorBgElevated: themeDack ? '#262626' : '#ffffff',
             colorBgSpotlight: '#313131',
+            ...ThemeToken
+
         },
-    }), [themeDack, BgLayout]);
-    const antdToken = useMemo(() => theme.getDesignToken(Themeconfig), [Themeconfig]); //主题渲染
-    return { Themeconfig, antdToken }
+    }
+
+    return Themeconfig
 }
 
 export { ThemeFun, isWin11 }

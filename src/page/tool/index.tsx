@@ -6,6 +6,7 @@ import { CryptoTool } from './des';
 import { JsonViewer } from './JSONTreeTool';
 import { QRCodeGenerator } from './QRCode.tsx';
 import HttpRequestTool from './http';
+import PasswordGenerator from './PasswordGenerator';
 const items: TabsProps['items'] = [
     {
         key: '0',
@@ -38,6 +39,12 @@ const items: TabsProps['items'] = [
         label: 'QR码生成',
         children: <QRCodeGenerator />,
     },
+    {
+        key: '6',
+        label: '密码生成',
+        children: <PasswordGenerator />,
+
+    }
 ];
 export const ToolPage: React.FC = () => (
     <Tabs

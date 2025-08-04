@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
+import { ThemeConfig } from "antd";
+import { AliasToken } from "antd/es/theme/internal";
 // 原有的 AppMainType 保持不变
 export interface AppMainType {
     navigation: string
@@ -11,11 +12,13 @@ export interface AppMainType {
 }
 export interface TentativeType {
     licenseStatus: string
+    Themeconfig: ThemeConfig
     setTentative: (e: Partial<Omit<TentativeType,
         "setTentative">>) => void;
 }
 export const TentativeStore = create<TentativeType>((set) => ({
     licenseStatus: '正在验证许可证...',
+    Themeconfig: {},
     setTentative: (e) => set((state) => ({
         ...state,
         ...e,
@@ -39,6 +42,37 @@ export const AppMainStore = create<AppMainType>()(
         }
     )
 )
+
+export interface AppSetType {
+    /** 字体颜色 */
+    primaryColor: string;
+    /** 字体 */
+    fontFamily: string;
+    /** 标题按钮自动收缩 */
+    TouchTitleBtn:boolean;
+    /** 更新全局数据，可更新 star 和 starData */
+    SetAppSet: (e: Partial<AppSetType>) => void;
+}
+
+export const AppSetStore = create<AppSetType>()(
+    persist(
+        (set) => (
+            {
+                primaryColor:"#ff8c00",
+                fontFamily:"defaul",
+                TouchTitleBtn:true,
+                SetAppSet: (e) =>
+                    set((state) => ({
+                        ...state,
+                        ...e,
+                    })),
+            }
+        ),
+        {
+            name: 'Start-local-AppSet',
+        }
+    )
+);
 export interface starType {
     id: string;
     name: string;
