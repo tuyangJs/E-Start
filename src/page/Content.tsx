@@ -13,10 +13,11 @@ import ErrorPage from "@/404";
 
 const springElastic = {
   type: "spring",
-  stiffness: 160,
-  damping: 13.9,
   mass: 0.8,
-  bounce: 0.4,
+  bounce: 0.6,
+  stiffness: 300,
+  damping: 19,
+
 } as const;
 
 const variants = {
