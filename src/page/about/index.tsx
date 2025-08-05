@@ -113,7 +113,7 @@ tencent://groupwpa/?subcmd=all&param=7B2267726F757055696E223A2237303336323337343
             label: "开源软件声明",
             children: (
                <Typography.Text>
-               所需的第三方软件声明
+               第三方软件声明
                <Typography.Link onClick={() => setShowDrawer(true)}>点击查看</Typography.Link>
                </Typography.Text>
             ),

@@ -93,17 +93,15 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                 {!TouchOverlay && `.no-drag { -webkit-app-region: no-drag;}`}
             </style>
             <motion.div
-                className='ant-segmented ant-segmented-shape-round vague'
-                layout
                 style={{ display: 'flex', alignItems: 'center', width: 'auto', zIndex: 1 }}>
                 <AnimatePresence initial={false}>
                     {canGoBack && (
                         <motion.div
                             key="back-button"
                             className="no-drag"
-                            initial={{ opacity: 0, width: 0 }}
-                            animate={{ opacity: 1, width: 'auto' }}
-                            exit={{ opacity: 0, width: 0 }}
+                            initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                            animate={{ opacity: 1, width: 'auto', marginRight: 8 }}
+                            exit={{ opacity: 0, width: 0, marginRight: 0 }}
                             transition={{ duration: 0.3 }}
                             style={{ display: 'flex', alignItems: 'center' }}
                         >
@@ -119,21 +117,22 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                     )}
                 </AnimatePresence>
                 <LogoTile loading={loading} />
-            </motion.div>
+            </motion.div >
 
             {/* 中间导航 Segmented */}
             {
                 !loading &&
                 <Flex justify='center' style={{ width: '100%', position: "absolute" }} >
                     <Navigation style={{ boxShadow: config?.boxShadowSecondary }} />
-                </Flex>}
+                </Flex>
+            }
 
             {/* 右侧主题切换 + 窗口控制 */}
             <Flex
                 align='center'
                 gap='small'
                 justify='flex-end'
-                style={{height: "100%" }}>
+                style={{ height: "100%" }}>
                 <Segmented
                     className='no-drag vague'
                     shape="round"
@@ -196,7 +195,7 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                     </motion.div>
                 </Flex>
             </Flex>
-        </Flex>
+        </Flex >
 
     );
 };
