@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 import { AutoComplete, Input, Flex, Typography, theme } from 'antd';
 import { categories, SearchFor } from './RenderOptions';
 import { SettingIndexItem } from './types';
-const { Text, Title } = Typography;
+
+const { Title, Paragraph } = Typography;
+
 interface SearchBoxProps {
     value: string;
     onChange: (val: string) => void;
@@ -10,76 +12,113 @@ interface SearchBoxProps {
     onSelectItem: (categoryKey: string, itemKey: string) => void;
 }
 
-// 新增分组标题组件
-const Titles: React.FC<{ title: string }> = ({ title }) => (
+interface HighlightTextProps {
+    text: string;
+    term: string;
+    color: string;
+}
+
+interface OptionItemProps {
+    item: SettingIndexItem;
+    term: string;
+    color: string;
+}
+
+// 高亮文本组件
+const HighlightText: React.FC<HighlightTextProps> = ({ text, term, color }) => {
+    if (!text) return null;
+
+    return (
+        <>
+            {text.split(new RegExp(`(${term})`, 'gi')).map((part, idx) =>
+                part.toLowerCase() === term.toLowerCase() ? (
+                    <span key={idx} style={{ color }}>{part}</span>
+                ) : (
+                    part
+                )
+            )}
+        </>
+    );
+};
+
+// 选项项组件
+const OptionItem: React.FC<OptionItemProps> = ({ item, term, color }) => {
+    const [titleText, descriptionText] = item.title?.split(" - ") || [item.title, ''];
+
+    return (
+        <div style={{ padding: 4 }}>
+            <Title level={5} style={{ margin: 0 }}>
+                <HighlightText text={titleText} term={term} color={color} />
+            </Title>
+            {descriptionText && (
+                <Paragraph
+                    ellipsis={{ rows: 2 }}
+                    style={{
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word'
+                    }}
+                >
+                    <HighlightText text={descriptionText} term={term} color={color} />
+                </Paragraph>
+            )}
+        </div>
+    );
+};
+
+// 分组标题组件
+const GroupTitle: React.FC<{ title: string }> = ({ title }) => (
     <Flex align="center" justify="space-between">
         <strong>{title}</strong>
     </Flex>
 );
 
-const highlight = (text: string, term: string, color: string) =>
-    text.split(new RegExp(`(${term})`, 'gi')).map((part, idx) =>
-        part.toLowerCase() === term.toLowerCase()
-            ?
-            <span key={idx}
-                style={{ color }}>
-                {part}
-            </span>
-            :
-            part
-    );
-
-const settingsData = () => {
+// 获取设置数据
+const getSettingsData = (): SettingIndexItem[] => {
     const data: SettingIndexItem[] = [];
-    for (let index = 0; index < categories.length; index++) {
-        const element = categories[index];
-        const metadata = element.metadata();
-        data.push(...SearchFor(metadata, element.label, element.key));
-    }
+
+    categories.forEach(category => {
+        const metadata = category.metadata();
+        data.push(...SearchFor(metadata, category.label, category.key));
+    });
+
     return data;
 };
 
-const SearchBox: React.FC<SearchBoxProps> = ({ value, onChange, onSelectItem, style }) => {
-    const SettingsData = settingsData();
-    const config = theme.useToken();
+// 主搜索组件
+const SearchBox: React.FC<SearchBoxProps> = ({
+    value,
+    onChange,
+    onSelectItem,
+    style
+}) => {
+    const settingsData = getSettingsData();
+    const { token } = theme.useToken();
+
     const options = useMemo(() => {
         const term = value.trim().toLowerCase();
         if (!term) return [];
 
-        // 分组逻辑
-        const groupedResults: Record<string, SettingIndexItem[]> = {};
+        // 分组搜索结果
+        const groupedResults = settingsData.reduce<Record<string, SettingIndexItem[]>>(
+            (groups, item) => {
+                if (item.title.toLowerCase().includes(term)) {
+                    const group = groups[item.categoryLabel] || [];
+                    return { ...groups, [item.categoryLabel]: [...group, item] };
+                }
+                return groups;
+            },
+            {}
+        );
 
-        SettingsData.filter(item => item.title.toLowerCase().includes(term))
-            .forEach(item => {
-                if (!groupedResults[item.categoryLabel]) {
-                    groupedResults[item.categoryLabel] = [];
-                }
-                groupedResults[item.categoryLabel].push(item);
-            });
-        // 转换为分组选项
+        // 转换为AutoComplete需要的格式
         return Object.entries(groupedResults).map(([category, items]) => ({
-            label: <Titles title={category} />,
-            options: items.map(item => {
-                const arr = item.title?.split(" - ")
-                const titleText = arr[0]
-                const descriptionText = arr?.[1]
-                return {
-                    value: `${item.category}/${item.key}`,
-                    label: (
-                        <div style={{ padding: 4 }}>
-                            <Title level={5} style={{ margin: 0 }}>
-                                {highlight(titleText, term, config.token.colorPrimary)}
-                            </Title>
-                            {descriptionText && <Text >
-                                {highlight(descriptionText, term, config.token.colorPrimary)}
-                            </Text>}
-                        </div>
-                    )
-                }
-            }
-            )
+            label: <GroupTitle title={category} />,
+            options: items.map(item => ({
+                value: `${item.category}/${item.key}`,
+                label: <OptionItem item={item} term={term} color={token.colorPrimary} />,
+            }))
         }));
-    }, [value]);
+    }, [value, settingsData, token.colorPrimary]);
 
     return (
         <AutoComplete
@@ -98,7 +137,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ value, onChange, onSelectItem, st
             <Input.Search
                 variant="filled"
                 allowClear
-                
             />
         </AutoComplete>
     );

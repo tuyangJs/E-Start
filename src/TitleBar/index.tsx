@@ -2,16 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLeftOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import {
     Button, Divider, Flex, Segmented,
-    Space,
     ThemeConfig
 } from 'antd';
 import { theme } from "antd";
 
 import { restoreStateCurrent, StateFlags } from '@tauri-apps/plugin-window-state';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import usePageTitle from '@/mod/PageTitle';
 import { useAsyncEffect, useRequest } from 'ahooks';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { TitleButton } from './TitleButton';
 import { Navigation } from './Navigation';
 import { LogoTile } from './LogoTitle';
@@ -41,14 +40,14 @@ const upWindowTitle = async (PageTitle: string) => {
 let times: any = null
 const App: React.FC<Props> = ({ themeDack, loading }) => {
     const navigate = useNavigate();
-    const { TouchTitleBtn } = AppSetStore()
+    const { TouchTitleBtn, TouchOverlay } = AppSetStore()
     const [isMaximized, setisMaximized] = useState(false)
     const [hoverBtn, setHoverBtn] = useState(!TouchTitleBtn);
     const FULL_BTN_COUNT = TitleButton(isMaximized).length;
     const BUTTON_SIZE = 32; // 单个按钮估算宽度（含 padding/margin）
     const FULL_WIDTH = FULL_BTN_COUNT * BUTTON_SIZE + (FULL_BTN_COUNT - 1) * 4;
     const COLLAPSED_WIDTH = BUTTON_SIZE; // 只留一个占位符
-
+    const { canGoBack } = useNavigationState();
     useEffect(() => {
         setHoverBtn(!TouchTitleBtn);
     }, [TouchTitleBtn])
@@ -87,10 +86,41 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
 
         <Flex
             className="drag-region header_s"
-            gap="small"
+            gap={0}
             justify='space-between'
         >
-            <LogoTile loading={loading} />
+            <style>
+                {!TouchOverlay && `.no-drag { -webkit-app-region: no-drag;}`}
+            </style>
+            <motion.div
+                className='ant-segmented ant-segmented-shape-round vague'
+                layout
+                style={{ display: 'flex', alignItems: 'center', width: 'auto', zIndex: 1 }}>
+                <AnimatePresence initial={false}>
+                    {canGoBack && (
+                        <motion.div
+                            key="back-button"
+                            className="no-drag"
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: 'auto' }}
+                            exit={{ opacity: 0, width: 0 }}
+                            transition={{ duration: 0.3 }}
+                            style={{ display: 'flex', alignItems: 'center' }}
+                        >
+                            <Button
+                                type="text"
+                                shape="circle"
+                                size="small"
+                                icon={<ArrowLeftOutlined />}
+                                onClick={() => navigate(-1)}
+
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <LogoTile loading={loading} />
+            </motion.div>
+
             {/* 中间导航 Segmented */}
             {
                 !loading &&
@@ -103,7 +133,7 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                 align='center'
                 gap='small'
                 justify='flex-end'
-                style={{ width: "100%", height: 32 }}>
+                style={{height: "100%" }}>
                 <Segmented
                     className='no-drag vague'
                     shape="round"

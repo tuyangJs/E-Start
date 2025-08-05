@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar, Button, Card, Flex, Typography } from 'antd';
 import { tab1, tab2, tab3 } from './LinkData';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createAndClickLink } from '@/mod/createAndClickLink';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { setTheme } from '@tauri-apps/api/app';
 const tabList = [
     {
         key: 'tab1',
@@ -64,6 +66,23 @@ const CardMotion = {
 }
 const App: React.FC = () => {
     const [activeTabKey, setActiveTabKey] = useState<string>('tab1');
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    // 当 URL 改变时更新状态
+    useEffect(() => {
+        const newData = queryParams.get('key') || 'tab1';
+        setActiveTabKey(newData);
+    }, [location.search]);
+    const updateUrlParams = (key: string) => {
+        const params = new URLSearchParams();
+        params.set('key', key);
+
+        navigate({
+            pathname: location.pathname,
+            search: params.toString()
+        }, { replace: true });
+    };
     return (
         <>
             <AnimatePresence>
@@ -75,7 +94,7 @@ const App: React.FC = () => {
                         style={{ width: '100%', minHeight: '100%' }}
                         tabList={tabList}
                         activeTabKey={activeTabKey}
-                        onTabChange={setActiveTabKey}
+                        onTabChange={updateUrlParams}
                         className='link-card'
                         tabBarExtraContent={<Button disabled>编辑</Button>}
                     >
@@ -106,7 +125,7 @@ const App: React.FC = () => {
                                                 avatar={<Avatar src={item.avatar} />}
                                                 title={item.title}
                                                 description={
-                                                    
+
                                                     <Paragraph
                                                         ellipsis={{
                                                             rows: 2,

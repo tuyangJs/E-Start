@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useMsStoreApp } from "@/mod/useMsStoreApp";
 import { getLabelByValue } from "@/TitleBar/Navigation";
 import { RouteWrapper } from "@/mod/RouteWrapper";
+import ErrorPage from "@/404";
 
 const springElastic = {
   type: "spring",
@@ -65,7 +66,7 @@ export default function PageRouter({ themeDack }: PageRouterProps) {
             <Route path="/nav" element={<LinkPage />} />
             <Route path="/set" element={<SettingsPage />} />
             <Route path="/tool" element={<ToolPage />} />
-            <Route path="*" element={<HomePage />} />
+            <Route path="*" element={<ErrorPage />} />
           </Routes>
         </RouteWrapper>
       </motion.div>

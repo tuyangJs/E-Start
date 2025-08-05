@@ -3,7 +3,7 @@ import { SectionItem } from "../types";
 import { Switch } from "antd";
 
 const GesTouchSettings = () => {
-    const { TouchTitleBtn, SetAppSet } = AppSetStore()
+    const { TouchTitleBtn,TouchOverlay, SetAppSet } = AppSetStore()
     return [{
         key: 'Touch-TitleBtn',
         title: '标题栏按钮自动收缩',
@@ -13,6 +13,18 @@ const GesTouchSettings = () => {
                 checked={TouchTitleBtn}
                 onChange={(e) => {
                     SetAppSet({ TouchTitleBtn: e });
+                }}
+            />,
+    },
+    {
+        key: 'Touch-TitleBtn-Overlay',
+        title:"标题栏拖动区覆盖操作区",
+        description:"操作区为包含按钮的区域，开启后操作区在不影响按钮功能的情况下，可以长按拖动窗口和右键呼出窗口菜单",
+        control:
+            <Switch
+                checked={TouchOverlay}
+                onChange={(e) => {
+                    SetAppSet({ TouchOverlay: e });
                 }}
             />,
     }

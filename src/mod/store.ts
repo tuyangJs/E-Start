@@ -50,6 +50,8 @@ export interface AppSetType {
     fontFamily: string;
     /** 标题按钮自动收缩 */
     TouchTitleBtn:boolean;
+    /** 标题栏区域覆盖按钮 */
+    TouchOverlay:boolean;
     /** 更新全局数据，可更新 star 和 starData */
     SetAppSet: (e: Partial<AppSetType>) => void;
 }
@@ -61,6 +63,7 @@ export const AppSetStore = create<AppSetType>()(
                 primaryColor:"#ff8c00",
                 fontFamily:"defaul",
                 TouchTitleBtn:true,
+                TouchOverlay:true,
                 SetAppSet: (e) =>
                     set((state) => ({
                         ...state,
