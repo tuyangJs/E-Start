@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { ThemeConfig } from "antd";
-import { AliasToken } from "antd/es/theme/internal";
 // 原有的 AppMainType 保持不变
 export interface AppMainType {
     navigation: string

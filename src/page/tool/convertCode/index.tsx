@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Input, Select, Button, Space, Typography, message } from 'antd';
+import { Input, Select, Button, Space, message } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 const { Option } = Select;
-const { Title } = Typography;
 
 type ConversionType =
     | 'chinese-to-unicode'

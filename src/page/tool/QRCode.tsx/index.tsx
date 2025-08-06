@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { Input, Button, Space, Typography, Select, message, QRCode, Row, Col, ColorPicker, Upload, Switch, Divider, Segmented, QRCodeProps } from 'antd';
+import { Input, Button, Space, Select, message, QRCode, Row, Col, ColorPicker, Upload, Switch, Divider, Segmented } from 'antd';
 import { CopyOutlined, CloseOutlined, DownloadOutlined, UploadOutlined } from '@ant-design/icons';
 
-const { Title } = Typography;
+
 const { TextArea } = Input;
 const { Option } = Select;
 

@@ -5,7 +5,6 @@ import {
     Select,
     Button,
     Space,
-    Typography,
     Divider,
     message,
     Switch,
@@ -18,7 +17,6 @@ import CryptoJS from 'crypto-js';
 
 const { TextArea } = Input;
 const { Option } = Select;
-const { Title } = Typography;
 
 type Mode = 'encode' | 'decode' | 'encrypt' | 'decrypt';
 type Method =

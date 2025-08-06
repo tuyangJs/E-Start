@@ -107,7 +107,6 @@ tencent://groupwpa/?subcmd=all&param=7B2267726F757055696E223A2237303336323337343
             ),
             span: 2,
         },
-        ,
         {
             key: "LICENSES",
             label: "开源软件声明",
@@ -142,8 +141,7 @@ tencent://groupwpa/?subcmd=all&param=7B2267726F757055696E223A2237303336323337343
             label: 'Ant Design 版本',
             children: antdVersion,
             span: 2,
-        },
-
+        }
     ];
 
 

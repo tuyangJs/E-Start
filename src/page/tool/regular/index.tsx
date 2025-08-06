@@ -5,7 +5,6 @@ import {
   Select,
   Button,
   Space,
-  Typography,
   Divider,
   message,
   Checkbox,
@@ -17,7 +16,6 @@ import { CopyOutlined } from '@ant-design/icons';
 import { regexPresets } from './regexPresets';
 
 const { TextArea } = Input;
-const { Title } = Typography;
 const { Option } = Select;
 
 export const RegexTester: React.FC = () => {
