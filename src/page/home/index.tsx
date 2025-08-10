@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { openBtn } from "./openBtn";
 import { AppMainStore } from "@/mod/store";
 import { saveEFiles } from "./File";
-import { use } from "framer-motion/client";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AddStarModal } from "./Table/addstart";
 
