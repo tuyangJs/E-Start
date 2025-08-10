@@ -8,7 +8,7 @@ import { upStar } from './upStar';
 interface Props {
   visible: boolean;
   onClose: () => void;
-  path: string;
+  path: string | string[] | undefined;
 }
 
 export const AddStarModal: React.FC<Props> = ({ onClose, visible, path }) => {
@@ -17,7 +17,8 @@ export const AddStarModal: React.FC<Props> = ({ onClose, visible, path }) => {
 
   // 提交收藏
   const handleOk = async () => {
-    const newData = upStar({ starData, selectedId, paths:path })
+    if (!path) return;
+    const newData = upStar({ starData, selectedId, paths: path })
     if (newData) {
       setAppData({ starData: newData });
       message.success('收藏成功');

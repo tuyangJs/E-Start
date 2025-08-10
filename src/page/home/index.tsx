@@ -1,10 +1,13 @@
 import { Card, Divider, Flex, Modal, Typography } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Filelist from "./Table/Filelist";
 import { motion, AnimatePresence } from "framer-motion";
 import { openBtn } from "./openBtn";
 import { AppMainStore } from "@/mod/store";
 import { saveEFiles } from "./File";
+import { use } from "framer-motion/client";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AddStarModal } from "./Table/addstart";
 
 export interface props { }
 
@@ -52,9 +55,34 @@ const Content: React.FC<props> = () => {
     const [modal, contextHolder] = Modal.useModal();
     const { confirm } = modal;
     const [expandFile, setExpandFile] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentPath, setCurrentPath] = useState<string[]>();
     const { eFiles } = AppMainStore()
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    //解析路由eFiles参数
+    const searchParams = new URLSearchParams(location.search);
+    const eFilesParam = searchParams.get('eFiles');
+    useEffect(() => {
+        if (eFilesParam) {
+            try {
+                const parsedEFiles: string[] = JSON.parse(eFilesParam);
+                setIsModalOpen(parsedEFiles.length > 0);
+                setCurrentPath(parsedEFiles);
+            } catch (error) {
+
+            }
+        }
+    }, [eFilesParam]);
+    const ModalonClose = () => {
+         setIsModalOpen(false)
+         navigate('/'); // 关闭模态框后重定向到主页
+         setCurrentPath(undefined); // 清除当前路径状态
+    }
     return (
         <>
+            <AddStarModal onClose={ModalonClose} visible={isModalOpen} path={currentPath} />
             <Flex
                 justify="space-between"
                 gap={expandFile ? 0 : 32}
@@ -111,7 +139,7 @@ const Content: React.FC<props> = () => {
                                             hoverable
                                             onClick={() => {
                                                 typeof item.onClick === "function" ? item.onClick(eFiles) :
-                                                    saveEFiles(item?.file || [], confirm,eFiles)
+                                                    saveEFiles(item?.file || [], confirm, eFiles)
                                             }}
                                         >
                                             <Flex

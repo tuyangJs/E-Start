@@ -1,4 +1,8 @@
 {
     "cmake.generator": "Ninja",
-    "cmake.buildDirectory": "${workspaceFolder}/build"
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "files.associations": {
+        "*.js": "javascript",
+        "xstring": "cpp"
+    }
 }

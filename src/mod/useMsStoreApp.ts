@@ -100,7 +100,7 @@ export function useMsStoreApp(
                 setError(null);
             })
             .catch((err: any) => {
-                console.error('Fetch error:', err);
+                //console.error('Fetch error:', err);
                 setError(err.message || String(err));
             })
             .finally(() => {

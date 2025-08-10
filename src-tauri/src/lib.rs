@@ -30,8 +30,10 @@ include!(concat!(env!("OUT_DIR"), "/build_number.rs"));
 fn build_timestamp() -> String {
     BUILD_NUMBER.to_string()
 }
-fn show_window(app: &AppHandle) {
+
+fn show_window(app: &AppHandle, _args: Vec<String>) {
     let windows = app.webview_windows();
+    println!("收到启动参数...{}", _args.join(","));
     if let Some(window) = windows.values().next() {
         if let Err(e) = window.show() {
             eprintln!("无法显示窗口: {}", e);
@@ -43,50 +45,21 @@ fn show_window(app: &AppHandle) {
             eprintln!("无法设置窗口焦点: {}", e);
         }
     }
+    // 跳过第 0 个参数（可执行文件路径）
+    let args: Vec<String> = _args.into_iter().skip(1).collect();
+    if !args.is_empty() {
+        println!("收到文件路径列表: {:?}", args);
+
+        // 发送给前端
+        if let Err(e) = app.emit("open-files", args) {
+            eprintln!("发送参数到前端失败: {}", e);
+        }
+    }
 }
 fn to_wide_null(s: &str) -> Vec<u16> {
     OsString::from(s).encode_wide().chain(once(0)).collect()
 }
-fn create_system_tray(app: &AppHandle) -> tauri::Result<()> {
-    let quit_i = MenuItem::with_id(app, "quit", "quit", true, None::<&str>)?;
-    let show_i = MenuItem::with_id(app, "show", "show", true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&show_i, &quit_i])?;
-    let trays = TrayIconBuilder::new()
-        .menu(&menu)
-        .icon(app.default_window_icon().unwrap().clone())
-        .show_menu_on_left_click(false)
-        .tooltip("Auto Theme Switching App")
-        .on_menu_event(|tray, event| match event.id.as_ref() {
-            "quit" => {
-                println!("通知前端关闭应用...");
-            }
-            "show" => {
-                show_window(&tray.app_handle());
-            }
-            "switch" => {
-                println!("切换系统主题...");
-                tray.app_handle().emit("switch", "switch").unwrap();
-            }
-            _ => {
-                println!("menu item {:?} not handled", event.id);
-            }
-        })
-        .on_tray_icon_event(|tray, event| match event {
-            TrayIconEvent::DoubleClick {
-                button: MouseButton::Left,
-                ..
-            } => {
-                println!("托盘图标被左键双击");
-                show_window(&tray.app_handle());
-            }
-            _ => {}
-        })
-        .build(app)?;
-    let state: State<AppState> = app.state();
-    let mut tray_lock = state.tray.lock().unwrap();
-    *tray_lock = Some(trays);
-    Ok(())
-}
+
 #[tauri::command]
 fn update_tray_menu_item_title(
     app: tauri::AppHandle,
@@ -384,7 +357,7 @@ pub fn run() {
             .plugin(tauri_plugin_persisted_scope::init())
             .plugin(tauri_plugin_window_state::Builder::new().build())
             .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-                show_window(app);
+                show_window(app, _args);
             }))
             .plugin(tauri_plugin_autostart::init(
                 MacosLauncher::LaunchAgent,

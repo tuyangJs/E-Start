@@ -15,6 +15,7 @@ import BlurredBackground from "@/mod/BlurredBackground";
 import { StoreCode } from "@/code";
 import PageRouter from "./Content";
 import { BrowserRouter } from "react-router-dom";
+
 import "./App.less";
 const { Paragraph, Text, Title } = Typography;
 const { Content } = Layout;
