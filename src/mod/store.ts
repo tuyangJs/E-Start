@@ -60,7 +60,7 @@ export const AppSetStore = create<AppSetType>()(
         (set) => (
             {
                 primaryColor:"#ff8c00",
-                fontFamily:"defaul",
+                fontFamily:"程序默认",
                 TouchTitleBtn:true,
                 TouchOverlay:true,
                 SetAppSet: (e) =>

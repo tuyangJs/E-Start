@@ -38,7 +38,10 @@ windows = { version = "0.54.0", features = [
     "Services_Store",
     "Win32_Foundation",
     "Win32_System_Com",
-    "implement"  # 必需用于异步支持
+    "implement" , # 必需用于异步支持
+      "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_UI_WindowsAndMessaging"
     
 ] }
 once_cell = "1.19.0" 

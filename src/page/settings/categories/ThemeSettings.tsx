@@ -1,8 +1,10 @@
 
 // src/components/settings/categories/GestureSettings.tsx
-import { Cascader, ColorPicker } from 'antd';
+import { ColorPicker } from 'antd';
 import { AppSetStore } from '@/mod/store';
+
 import { SectionItem } from '../types';
+import FontAutoComplete from './com/FontAutoComplete';
 const colorPresets = [
   '#1890ff',
   '#52c41a',
@@ -13,14 +15,13 @@ const colorPresets = [
   '#faad14',
   '#2f54eb',
 ];
-const Fontsoptions = [
-  { label: '默认字体', value: 'defaul' },
-  { label: '思源黑体', value: 'SourceHanSans' },
-  { label: 'HarmonyOS Sans', value: 'HarmonyOS_Sans_SC' },
-]
 
 const GestureSettings = () => {
   const { primaryColor, SetAppSet, fontFamily } = AppSetStore()
+  const FontonChange =(fontName: string) => {
+    SetAppSet({ fontFamily: fontName });
+  }
+
   return [{
     key: 'color-picker',
     title: '主题色',
@@ -45,12 +46,7 @@ const GestureSettings = () => {
     key: 'fonts',
     title: '字体设置',
     description: "修改程序界面文案字体",
-    control: <Cascader
-      options={Fontsoptions}
-      value={[fontFamily]}
-      onChange={e => SetAppSet({ fontFamily: e[0] })}
-      placeholder="请选择字体"
-    />
+    control: <FontAutoComplete defaultValue={fontFamily}  onChange={FontonChange}/>
     ,
   }
 

@@ -1,14 +1,13 @@
 use std::ffi::OsString;
 use std::iter::once;
 use std::os::windows::ffi::OsStrExt;
+use std::os::windows::ffi::OsStringExt;
 use std::process::Command;
 use std::ptr;
 use std::sync::Mutex;
 use tauri::command;
-use tauri::{
-    menu::{Menu, MenuItem, PredefinedMenuItem},
-    tray::{MouseButton, TrayIcon, TrayIconBuilder, TrayIconEvent},
-};
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
+use tauri::tray::TrayIcon;
 use tauri::{AppHandle, Emitter, Manager, State};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_log::{Target, TargetKind};
@@ -19,6 +18,13 @@ use winapi::{
     shared::winerror::ERROR_SUCCESS,
     um::winnt::{KEY_READ, REG_SZ},
     um::winreg::{RegCloseKey, HKEY_CURRENT_USER},
+};
+use windows::Win32::{
+    Foundation::{HWND, LPARAM},
+    Graphics::Gdi::{
+        EnumFontFamiliesExW, TEXTMETRICW,GetDC, ReleaseDC, DEFAULT_CHARSET, LF_FACESIZE, LOGFONTW,
+    },
+    UI::WindowsAndMessaging::GetDesktopWindow,
 };
 mod store;
 struct AppState {
@@ -58,6 +64,69 @@ fn show_window(app: &AppHandle, _args: Vec<String>) {
 }
 fn to_wide_null(s: &str) -> Vec<u16> {
     OsString::from(s).encode_wide().chain(once(0)).collect()
+}
+
+
+#[tauri::command]
+fn list_system_fonts() -> Vec<String> {
+    let mut fonts: Vec<String> = Vec::new();
+
+    unsafe {
+        // 获取桌面窗体 HDC
+        let hwnd: HWND = GetDesktopWindow();
+        let hdc = GetDC(hwnd);
+
+        // 初始化 LOGFONTW（全0）
+        let mut logfont: LOGFONTW = std::mem::zeroed();
+        // 直接赋 DEFAULT_CHARSET（类型匹配）
+        logfont.lfCharSet = DEFAULT_CHARSET;
+
+        // 传入 fonts 的指针（转成 isize）到回调
+        let lparam = LPARAM(&mut fonts as *mut _ as isize);
+
+        EnumFontFamiliesExW(
+            hdc,
+            &mut logfont,
+            Some(enum_font_proc),
+            lparam,
+            0,
+        );
+
+        ReleaseDC(hwnd, hdc);
+    }
+
+    // 排序并去重
+    fonts.sort();
+    fonts.dedup();
+    fonts
+}
+
+/// 使用 LOGFONTW / TEXTMETRICW 作为回调参数，兼容性最好
+unsafe extern "system" fn enum_font_proc(
+    elf: *const LOGFONTW,
+    _ntm: *const TEXTMETRICW,
+    _font_type: u32,
+    lparam: LPARAM,
+) -> i32 {
+    if elf.is_null() {
+        return 1;
+    }
+
+    // 恢复 Vec<String> 的可变引用
+    let fonts: &mut Vec<String> = &mut *(lparam.0 as *mut Vec<String>);
+
+    // 读取 lfFaceName（UTF-16, 固定长度 LF_FACESIZE）
+    let name_wide = &(*elf).lfFaceName;
+    let len = name_wide.iter().position(|&c| c == 0).unwrap_or(LF_FACESIZE as usize);
+    let os = OsString::from_wide(&name_wide[..len]);
+
+    if let Ok(s) = os.into_string() {
+        if !fonts.contains(&s) {
+            fonts.push(s);
+        }
+    }
+
+    1 // 返回 1 表示继续枚举
 }
 
 #[tauri::command]
@@ -377,7 +446,8 @@ pub fn run() {
                 build_timestamp,
                 is_running_in_msix,
                 is_debug_build,
-                verify_license
+                verify_license,
+                list_system_fonts
             ])
             .run(tauri::generate_context!())
             .expect("error while running tauri application");
