@@ -1,46 +1,28 @@
-# Windows AutoTheme
+# 易语言项目管理器
 <div align="center">
- <img src="https://github.com/user-attachments/assets/c3cdbcf6-6bdc-4e91-a84a-55ef109c60f5" alt="Screenshot 1" width="100%">
-
- #### Language: [中文](/README.md) | [English](/README-English.md)
+ <img src="https://github.com/user-attachments/assets/24c51a86-42c2-4e9d-8d90-b244c86251f9" alt="Screenshot 1" width="100%">
  </div>
 
 
 
 ## 概述
 
-**Windows AutoTheme** 是一个轻量级的 Windows 主题自动切换工具，支持系统在日间使用浅色模式，夜间切换为深色模式。<br />
-该项目利用 Rust 构建后端代码来执行系统操作，并采用 TypeScript 与 Ant Design 5 构建前端界面。<br />同时，它通过内置免费 API 获取日出和日落数据，实现智能自动切换主题模式。
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/8ed6411d-cc19-4884-a2b6-8d0d65f64078" alt="Screenshot 2"  width="55%">
- </div>
+专为易语言开发者打造的效率利器
+⚠️ 重要前提：若要体验本程序完整功能，请确保您已安装“易语言IDE”。
+
+✨ 核心功能亮点
+
+ ·  一体化项目管理**  
+    📁 智能扫描本地项目 | 🔗自定义分组收藏项目 | ⚡ 一键创建项目
+ ·   专业开发工具集**  
+     🧩 编码转换 | 🛠️ JSON解析 | 🔍 HTTP客户端
+ ·   跨版本兼容支持**  
+      ✅ 完美兼容易语言5.x
+
+📦 开箱即用的体验
+安装 → 打开即用
 
 ---
-
-
-
-## 功能特点
-
-- **自动切换**：根据日出、日落时间自动切换 Windows 主题模式。
-- **高效轻量**：使用 Rust 提供高效的系统调用，保证运行稳定。
-- **现代前端**：前端采用 TypeScript 与 Ant Design 5 定制界面，简洁美观。
-- **免费天文数据支持**：集成免费 API，实时获取日出和日落时间。
-
----
-
-## 截图
-
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/5f0c5730-a398-482c-8e6c-e49067d2fe24" alt="pshotA.png" width="45%" style="margin-right: 5%;">
-</div>
-
----
-
-## 打赏
-
-<img src="https://github.com/user-attachments/assets/1be236a6-504a-4beb-b76c-ba6192730ef3" alt="支付宝.png" width="45%" style="margin-right: 5%;">
-<img src="https://github.com/user-attachments/assets/5e6f50f5-6712-429a-8c7f-d6ceb87a6cd6" alt="微信.png" width="45%" style="margin-right: 5%;">
-
 
 ## 安装与使用
 
@@ -52,8 +34,25 @@
 
 ### 安装
 
-打开我们的[发行页面](https://github.com/tuyangJs/Windows_AutoTheme/releases)，下载最新版本的安装包。
+### 推荐安装（Microsoft Store）：
+[![获取应用](https://get.microsoft.com/images/zh-cn%20light.svg)](https://apps.microsoft.com/detail/9N2RQBRN2TRF)
 
+---
+
+## 功能特点
+
+- **丰富的工具集**：集成丰富开发工具，一键式使用。
+- **高效轻量**：使用 Rust 提供高效的后端代码运行，保证运行稳定。
+- **现代前端**：前端采用 TypeScript 与 Ant Design 5 定制界面，简洁美观。
+- **优雅的动画**：客户端采用大量交互动画，让你的每一次点击仿佛德芙一般。
+
+---
+
+
+## 打赏
+
+<img src="https://github.com/user-attachments/assets/1be236a6-504a-4beb-b76c-ba6192730ef3" alt="支付宝.png" width="45%" style="margin-right: 5%;">
+<img src="https://github.com/user-attachments/assets/5e6f50f5-6712-429a-8c7f-d6ceb87a6cd6" alt="微信.png" width="45%" style="margin-right: 5%;">
 
 ## 开发调试
 安装依赖
@@ -68,9 +67,6 @@ npm start
 ```
 npm run tauri build
 ```
-## 其它仓库
-- Gitee (国内推荐): [https://gitee.com/ilinxuan/windows_-auto-theme](https://gitee.com/ilinxuan/windows_-auto-theme) 
-- GitHub: [https://github.com/tuyangJs/Windows_AutoTheme](https://github.com/tuyangJs/Windows_AutoTheme) 
 
 ## 联系作者
 
