@@ -9,28 +9,24 @@ import { GetFileinfo, getParentPath } from "@/mod/FileGet";
 import { Window } from '@tauri-apps/api/window';
 import { AppMainStore, AppSetStore, TentativeStore } from "@/mod/store";
 import { useAsyncEffect } from "ahooks";
-import dayjs from "dayjs";
 import zhCN from 'antd/locale/zh_CN';
 import BlurredBackground from "@/mod/BlurredBackground";
 import PageRouter from "./Content";
 import { BrowserRouter } from "react-router-dom";
 
 import "./App.less";
-const { Paragraph, Text, Title } = Typography;
+const { Paragraph, Text } = Typography;
 const { Content } = Layout;
 const config = theme.getDesignToken()
 window.appWindow = new Window('main');
 
 
 const matchMedia = window.matchMedia('(prefers-color-scheme: light)');
-const inMsix = await invoke<boolean>('is_running_in_msix');
-const isDebug = await invoke<boolean>('is_debug_build');
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const loading = false;
   const { setAppMain, eFiles } = AppMainStore()
   const [themeDack, setThemeDack] = useState(!matchMedia.matches);
-  const [expire, setExpire] = useState(isDebug ? false : !inMsix);
   const { setTentative, Themeconfig } = TentativeStore()
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -44,13 +40,7 @@ function App() {
   const handleCancel = () => {
     setIsModalOpen(false)
   };
-  function checkDateStatus() {
-    if (!inMsix) return
-    const targetDate = dayjs('2025-11-01');
-    const today = dayjs().startOf('day');
-    const expiry = dayjs(targetDate).startOf('day');
-    setExpire(expiry.isSame(today))
-  }
+
   //设置窗口材料
   useAsyncEffect(async () => {
 
@@ -78,8 +68,6 @@ function App() {
       setThemeDack(!this.matches);
     };
     matchMedia.addEventListener('change', handleChange);
-    checkDateStatus()
-
   }, [])
   //同步窗口标题
   const { primaryColor, fontFamily } = AppSetStore()
@@ -117,15 +105,7 @@ function App() {
           padding: 0,
         }}>
           <Content className="container">
-            {!expire ? (
-   
-              <PageRouter themeDack={false} />
-
-            ) :
-              <Title level={3} className="important-margin-top">
-                抱歉，本版本已结束或版本异常，请更新程序版本！
-              </Title>
-            }
+             <PageRouter themeDack={false} />
           </Content>
         </Layout>
       </BrowserRouter>
