@@ -9,7 +9,7 @@ import { theme } from "antd";
 import { restoreStateCurrent, StateFlags } from '@tauri-apps/plugin-window-state';
 import { useNavigate } from 'react-router-dom';
 import usePageTitle from '@/mod/PageTitle';
-import { useAsyncEffect, useRequest } from 'ahooks';
+import { useAsyncEffect, useRequest, useUpdateEffect } from 'ahooks';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TitleButton } from './TitleButton';
 import { Navigation } from './Navigation';
@@ -40,7 +40,7 @@ const upWindowTitle = async (PageTitle: string) => {
 let times: any = null
 const App: React.FC<Props> = ({ themeDack, loading }) => {
     const navigate = useNavigate();
-    const { TouchTitleBtn, TouchOverlay } = AppSetStore()
+    const { TouchTitleBtn, TouchOverlay, theme } = AppSetStore()
     const [isMaximized, setisMaximized] = useState(false)
     const [hoverBtn, setHoverBtn] = useState(!TouchTitleBtn);
     const FULL_BTN_COUNT = TitleButton(isMaximized).length;
@@ -76,11 +76,16 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
     useAsyncEffect(async () => {
         run(PageTitle)
     }, [PageTitle])
-    async function changeTheme() {
+    async function changeTheme(type: any) {
         const appWindow = window.appWindow;
-        appWindow.setTheme(themeDack ? 'light' : 'dark');
+        appWindow.setTheme(type === "system" ? undefined : type);
     }
-
+    useUpdateEffect(() => {
+        changeTheme(theme)
+    }, [theme])
+    useEffect(() => {
+        changeTheme(theme)
+    }, [])
 
     return (
 
@@ -98,17 +103,16 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                     {canGoBack && (
                         <motion.div
                             key="back-button"
-                            className="no-drag"
+                            style={{ boxShadow: config?.boxShadowSecondary, display: 'flex', alignItems: 'center' }}
+                            className="no-drag liquid-glass"
                             initial={{ opacity: 0, width: 0, marginRight: 0 }}
                             animate={{ opacity: 1, width: 'auto', marginRight: 8 }}
                             exit={{ opacity: 0, width: 0, marginRight: 0 }}
                             transition={{ duration: 0.3 }}
-                            style={{ display: 'flex', alignItems: 'center' }}
                         >
                             <Button
                                 type="text"
                                 shape="circle"
-                                size="small"
                                 icon={<ArrowLeftOutlined />}
                                 onClick={() => navigate(-1)}
 
@@ -116,7 +120,7 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-                <LogoTile loading={loading} />
+                <LogoTile loading={loading} style={{ boxShadow: config?.boxShadowSecondary, }} />
             </motion.div >
 
             {/* 中间导航 Segmented */}
@@ -134,20 +138,20 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
                 justify='flex-end'
                 style={{ height: "100%" }}>
                 <Segmented
-                    className='no-drag vague'
+                    className='no-drag liquid-glass'
                     shape="round"
                     style={{ boxShadow: config?.boxShadowSecondary }}
                     block
-                    value={themeDack ? 'Moon' : 'Sun'}
+                    value={themeDack ? 'dark' : 'light'}
                     options={[
-                        { value: 'Moon', icon: <MoonOutlined /> },
-                        { value: 'Sun', icon: <SunOutlined /> },
+                        { value: 'dark', icon: <MoonOutlined /> },
+                        { value: 'light', icon: <SunOutlined /> },
                     ]}
                     onChange={changeTheme}
                 />
 
                 <Flex
-                    className='ant-segmented ant-segmented-shape-round vague'
+                    className='ant-segmented ant-segmented-shape-round liquid-glass'
                     align='center'
                     onMouseEnter={() => setHoverBtn(true)}
                     onMouseLeave={() => setHoverBtn(!TouchTitleBtn)}

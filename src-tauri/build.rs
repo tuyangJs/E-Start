@@ -1,5 +1,5 @@
+use chrono::{Datelike, Local};
 use std::{env, fs, io::Write, path::Path};
-use chrono::{Local, Datelike};
 
 fn main() {
     tauri_build::build(); // 初始化 Tauri 构建环境

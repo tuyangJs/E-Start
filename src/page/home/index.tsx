@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Filelist from "./Table/Filelist";
 import { motion, AnimatePresence } from "framer-motion";
 import { openBtn } from "./openBtn";
-import { AppMainStore } from "@/mod/store";
+import { AppMainStore, TentativeStore } from "@/mod/store";
 import { saveEFiles } from "./File";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AddStarModal } from "./Table/addstart";
@@ -59,7 +59,7 @@ const Content: React.FC<props> = () => {
     const { eFiles } = AppMainStore()
     const location = useLocation();
     const navigate = useNavigate();
-
+    const { messageApi } = TentativeStore()
     //解析路由eFiles参数
     const searchParams = new URLSearchParams(location.search);
     const eFilesParam = searchParams.get('eFiles');
@@ -75,9 +75,9 @@ const Content: React.FC<props> = () => {
         }
     }, [eFilesParam]);
     const ModalonClose = () => {
-         setIsModalOpen(false)
-         navigate('/'); // 关闭模态框后重定向到主页
-         setCurrentPath(undefined); // 清除当前路径状态
+        setIsModalOpen(false)
+        navigate('/'); // 关闭模态框后重定向到主页
+        setCurrentPath(undefined); // 清除当前路径状态
     }
     return (
         <>
@@ -138,7 +138,7 @@ const Content: React.FC<props> = () => {
                                             hoverable
                                             onClick={() => {
                                                 typeof item.onClick === "function" ? item.onClick(eFiles) :
-                                                    saveEFiles(item?.file || [], confirm, eFiles)
+                                                    saveEFiles(item?.file || [], confirm, eFiles, messageApi)
                                             }}
                                         >
                                             <Flex

@@ -2,7 +2,7 @@
 // Navigation item
 export interface NavItem { key: string; label: string;icon?: JSX.Element; }
 // Section component props
-export interface SectionItem { key: string; title: string; description?: string; control: JSX.Element; }
+export interface SectionItem { key: string; title: string; tip?:string;description?: string; control: JSX.Element; }
 // CardOption group
 export interface CardOptionItem { key: string; title: string; description?: string; }
 export interface CardOptionGroup { key: string; title?: string; options: CardOptionItem[]; selectedKey: string; onChange: (key: string) => void; }

@@ -31,6 +31,17 @@
     "fs:allow-read",
     "fs:read-all",
     "fs:write-all",
+    "fs:allow-create",
+    {
+      "identifier": "fs:default",
+      "allow": [
+        {
+          "path": "**"
+        },
+        "fs:allow-write-recursive",
+        "fs:scope-fs-recursive"
+      ]
+    },
     {
       "identifier": "http:default",
       "all": false,
@@ -43,14 +54,6 @@
         }
       ],
       "deny": []
-    },
-    {
-      "identifier": "fs:default",
-      "allow": [
-        {
-          "path": "**"
-        }
-      ]
     },
     {
       "identifier": "opener:allow-open-url",

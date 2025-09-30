@@ -24,7 +24,7 @@ export const Navigation: FC<NavigationProps> = ({ style }) => {
  
     return (
         <Segmented
-            className='no-drag ant-segmented ant-segmented-shape-round vague'
+            className='no-drag ant-segmented ant-segmented-shape-round liquid-glass'
             style={style}
             shape="round"
             value={location.pathname}

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { ThemeConfig } from "antd";
+import { MessageInstance } from "antd/es/message/interface";
 // 原有的 AppMainType 保持不变
 export interface AppMainType {
     navigation: string
@@ -12,12 +13,15 @@ export interface AppMainType {
 export interface TentativeType {
     licenseStatus: string
     Themeconfig: ThemeConfig
+    messageApi: MessageInstance
     setTentative: (e: Partial<Omit<TentativeType,
         "setTentative">>) => void;
+
 }
 export const TentativeStore = create<TentativeType>((set) => ({
     licenseStatus: '正在验证许可证...',
     Themeconfig: {},
+    messageApi: {} as MessageInstance,
     setTentative: (e) => set((state) => ({
         ...state,
         ...e,
@@ -48,9 +52,17 @@ export interface AppSetType {
     /** 字体 */
     fontFamily: string;
     /** 标题按钮自动收缩 */
-    TouchTitleBtn:boolean;
+    TouchTitleBtn: boolean;
     /** 标题栏区域覆盖按钮 */
-    TouchOverlay:boolean;
+    TouchOverlay: boolean;
+    /** 启动时恢复上次打开的页面 */
+    routedata: boolean;
+    /** 上次打开的页面路径 */
+    routeText: string;
+    /** 主题模式 */
+    theme: 'light' | 'dark' | 'system';
+    /** 收藏夹目录 */
+    starDir?: string;
     /** 更新全局数据，可更新 star 和 starData */
     SetAppSet: (e: Partial<AppSetType>) => void;
 }
@@ -59,10 +71,14 @@ export const AppSetStore = create<AppSetType>()(
     persist(
         (set) => (
             {
-                primaryColor:"#ff8c00",
-                fontFamily:"程序默认",
-                TouchTitleBtn:true,
-                TouchOverlay:true,
+                primaryColor: "#ff8c00",
+                fontFamily: "程序默认",
+                TouchTitleBtn: true,
+                TouchOverlay: true,
+                routedata: false,
+                routeText: "/",
+                theme: 'system',
+                starDir: undefined,
                 SetAppSet: (e) =>
                     set((state) => ({
                         ...state,

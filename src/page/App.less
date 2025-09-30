@@ -5,6 +5,10 @@ body {
   margin: 0;
 }
 
+#root {
+  //--shadow: 0 6px 16px 0 #dc7a0314, 0 3px 6px -4px #dc7a031f, 0 9px 28px 8px #dc7a030d;
+}
+
 h1,
 h2,
 h3,
@@ -66,10 +70,6 @@ border-radius:45% !important
 
 .scroll-container {
   height: 100vh;
-}
-
-#root {
-  --shadow: 0 6px 16px 0 #dc7a0314, 0 3px 6px -4px #dc7a031f, 0 9px 28px 8px #dc7a030d;
 }
 
 .ant-form.ant-form-vertical {
@@ -155,3 +155,44 @@ input:focus {
   flex-direction: column;
   text-align: center;
 }
+/* Liquid Glass CSS - WebGL Shader Replica */
+.liquid-glass {
+  position: relative;
+  background: rgba(248, 250, 252, 0.1);
+  backdrop-filter: 
+    blur(10px) 
+    saturate(1.505) 
+    contrast(1.036);
+  -webkit-backdrop-filter: 
+    blur(10px) 
+    saturate(1.505) 
+    contrast(1.036);
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0),
+    inset 0 1px 0 rgba(255, 255, 255, 0.012) ;
+  overflow: hidden;
+}
+
+/* Refraction distortion layer */
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, rgba(90, 90, 90, 0.24) 0%, transparent 70%);
+  filter: blur(17.4px);
+  animation: liquidRefract 8s ease-in-out infinite;
+}
+
+@keyframes liquidRefract {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(0deg) scale(1.435); }
+}
+
+/* WebGL Shader Parameters:
+ * Refractive Index: 2.01 (eta: 0.498)
+ * Distortion Strength: 0.087
+ * Curvature: 0
+ * Edge Sharpness: 0.12
+ */

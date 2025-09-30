@@ -49,8 +49,8 @@ const SettingsPage: React.FC = () => {
     }, 100);
   };
 
-  const config = theme.getDesignToken();
-  
+  const config = theme.useToken().token;
+
   return (
     <Flex gap={22} style={{ flex: 1, minWidth: 0 }}>
       <Card
@@ -58,9 +58,10 @@ const SettingsPage: React.FC = () => {
           height: 'calc(100vh - 62px)',
           boxShadow: config?.boxShadowSecondary,
           zIndex: 1,
+         // background: config.colorBgLayout,
         }}
         styles={{ body: { paddingInline: 8, paddingBlock: 12 } }}
-        className="vague"
+        className="liquid-glass"
       >
         <Sider width={220}>
           <Space direction="vertical" style={{ width: '100%' }} size={18}>

@@ -55,7 +55,10 @@ export default function FontAutoComplete({
 
     // 模糊搜索（简单 substring，忽略大小写）
     const filteredFonts = useMemo(() => {
-        const q = search.trim().toLowerCase();
+        let q = search.trim().toLowerCase() ; 
+        if (q === "程序默认") {
+            q = ""; // 如果是默认值，清空搜索条件
+        }
         if (!q) return fonts.slice(0, maxOptions);
         const out: string[] = [];
         // 先尽量把包含前缀的排在前面，然后再包含中间的

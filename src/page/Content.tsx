@@ -11,6 +11,9 @@ import { getLabelByValue } from "@/TitleBar/Navigation";
 import { RouteWrapper } from "@/mod/RouteWrapper";
 import { listen } from "@tauri-apps/api/event";
 import ErrorPage from "@/404";
+import { invoke } from "@tauri-apps/api/core";
+import { useAsyncEffect } from "ahooks";
+import { AppSetStore } from "@/mod/store";
 
 const springElastic = {
   type: "spring",
@@ -39,20 +42,36 @@ export interface PageRouterProps {
   themeDack: boolean;
 }
 let timeoutId: NodeJS.Timeout | null = null;
-
+const args: string[] = await invoke("get_launch_args");
 export default function PageRouter({ themeDack }: PageRouterProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { SetAppSet, routeText, routedata } = AppSetStore()
   const { info } = useMsStoreApp(
     '9N2RQBRN2TRF', 'US', 'zh-CN', 'zh-CN', 'Windows.Desktop', true
   );
-  useEffect(() => {
+  useAsyncEffect(async () => {
     //防抖监听打开文件
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-    timeoutId = setTimeout(() => {
-      listen("open-files", (event: any) => {
+    timeoutId = setTimeout(async () => {
+      //取程序启动的命令参数
+      if (args.length > 0) {
+        const eFiles = args.filter((path) =>
+          path.toLowerCase().endsWith(".e")
+        );
+        if (eFiles.length > 0) {
+          navigate(`/?eFiles=${encodeURIComponent(JSON.stringify(eFiles))}`);
+          args.pop()
+        }
+      } else {
+        if (routedata && routeText !== "/") {
+          navigate(routeText)
+        }
+      }
+      //接收多开程序的启动命令参数
+      listen("open-files", async (event: any) => {
         // payload 就是 Vec<String>，在 JS 里会变成 string[]
         const filePaths: string[] = event.payload;
         // 只保留后缀为 .e 的文件（不区分大小写）
@@ -62,12 +81,13 @@ export default function PageRouter({ themeDack }: PageRouterProps) {
         if (eFiles.length > 0) {
           navigate(`/?eFiles=${encodeURIComponent(JSON.stringify(eFiles))}`);
         }
-        console.log("从右键菜单收到文件列表:", eFiles);
       });
+
     }, 990);
 
   }, [])
   useEffect(() => {
+    SetAppSet({ routeText: location.pathname })
     document.title = `${(info?.ProductTitle || '易语言项目管理器')} - ${getLabelByValue(location.pathname)}`
   }, [location, info]);
   return (

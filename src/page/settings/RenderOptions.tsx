@@ -3,8 +3,10 @@ import Section from './Section';
 import AboutPag from '@/page/about';
 import { SectionItem, SettingCategory, SettingIndexItem } from './types';
 import GesTouchSettings from  './categories/Touch';
-import { InfoCircleOutlined, SkinOutlined } from '@ant-design/icons';
+import { ControlOutlined, HddOutlined, InfoCircleOutlined, SkinOutlined } from '@ant-design/icons';
 import Touchicon from '@/assets/fluent-mdl2--touch.svg?react';
+import GesStorage from './categories/storage';
+import Assistant from './categories/assistant';
 export interface RenderOptionsProps {
     SectionItem: SectionItem[]
 }
@@ -45,6 +47,20 @@ export const categories: SettingCategory[] = [
         metadata: GesTouchSettings,
         component: () => <RenderOptions SectionItem={GesTouchSettings()} />,
         icon: <Touchicon />
+    },
+    {
+        key: 'storage',
+        label: '存储',
+        metadata: GesStorage,
+        component: () => <RenderOptions SectionItem={GesStorage()} />,
+        icon: <HddOutlined />
+    },
+    {
+        key: 'assistant',
+        label: '辅助功能',
+        metadata: Assistant,
+        component: () => <RenderOptions SectionItem={Assistant()} />,
+        icon: <ControlOutlined />
     },
     {
         key: "about",

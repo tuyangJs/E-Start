@@ -1,14 +1,13 @@
+use std::env;
 use std::ffi::OsString;
 use std::iter::once;
 use std::os::windows::ffi::OsStrExt;
 use std::os::windows::ffi::OsStringExt;
+use std::path::PathBuf;
 use std::process::Command;
 use std::ptr;
-use std::sync::Mutex;
 use tauri::command;
-use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
-use tauri::tray::TrayIcon;
-use tauri::{AppHandle, Emitter, Manager, State};
+use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_log::{Target, TargetKind};
 use winapi::um::winnt::KEY_WOW64_32KEY;
@@ -19,17 +18,17 @@ use winapi::{
     um::winnt::{KEY_READ, REG_SZ},
     um::winreg::{RegCloseKey, HKEY_CURRENT_USER},
 };
+use ini::Ini;
+use std::fs;
 use windows::Win32::{
     Foundation::{HWND, LPARAM},
     Graphics::Gdi::{
-        EnumFontFamiliesExW, TEXTMETRICW,GetDC, ReleaseDC, DEFAULT_CHARSET, LF_FACESIZE, LOGFONTW,
+        EnumFontFamiliesExW, GetDC, ReleaseDC, DEFAULT_CHARSET, LF_FACESIZE, LOGFONTW, TEXTMETRICW,
     },
     UI::WindowsAndMessaging::GetDesktopWindow,
 };
-mod store;
-struct AppState {
-    tray: Mutex<Option<TrayIcon>>,
-}
+
+
 // 包含编译时生成的构建信息
 include!(concat!(env!("OUT_DIR"), "/build_number.rs"));
 #[tauri::command]
@@ -40,7 +39,13 @@ fn build_timestamp() -> String {
 fn show_window(app: &AppHandle, _args: Vec<String>) {
     let windows = app.webview_windows();
     println!("收到启动参数...{}", _args.join(","));
-    if let Some(window) = windows.values().next() {
+   if let Some(window) = windows.values().next() {
+        // 先置顶窗口
+        if let Err(e) = window.set_always_on_top(true) {
+            eprintln!("无法置顶窗口: {}", e);
+        }
+        
+        // 显示窗口并获取焦点
         if let Err(e) = window.show() {
             eprintln!("无法显示窗口: {}", e);
         }
@@ -50,6 +55,16 @@ fn show_window(app: &AppHandle, _args: Vec<String>) {
         if let Err(e) = window.set_focus() {
             eprintln!("无法设置窗口焦点: {}", e);
         }
+        
+        // 短暂延迟后取消置顶
+        // 使用异步任务来避免阻塞主线程
+        let window_clone = window.clone();
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            if let Err(e) = window_clone.set_always_on_top(false) {
+                eprintln!("无法取消窗口置顶: {}", e);
+            }
+        });
     }
     // 跳过第 0 个参数（可执行文件路径）
     let args: Vec<String> = _args.into_iter().skip(1).collect();
@@ -65,7 +80,6 @@ fn show_window(app: &AppHandle, _args: Vec<String>) {
 fn to_wide_null(s: &str) -> Vec<u16> {
     OsString::from(s).encode_wide().chain(once(0)).collect()
 }
-
 
 #[tauri::command]
 fn list_system_fonts() -> Vec<String> {
@@ -84,13 +98,7 @@ fn list_system_fonts() -> Vec<String> {
         // 传入 fonts 的指针（转成 isize）到回调
         let lparam = LPARAM(&mut fonts as *mut _ as isize);
 
-        EnumFontFamiliesExW(
-            hdc,
-            &mut logfont,
-            Some(enum_font_proc),
-            lparam,
-            0,
-        );
+        EnumFontFamiliesExW(hdc, &mut logfont, Some(enum_font_proc), lparam, 0);
 
         ReleaseDC(hwnd, hdc);
     }
@@ -117,7 +125,10 @@ unsafe extern "system" fn enum_font_proc(
 
     // 读取 lfFaceName（UTF-16, 固定长度 LF_FACESIZE）
     let name_wide = &(*elf).lfFaceName;
-    let len = name_wide.iter().position(|&c| c == 0).unwrap_or(LF_FACESIZE as usize);
+    let len = name_wide
+        .iter()
+        .position(|&c| c == 0)
+        .unwrap_or(LF_FACESIZE as usize);
     let os = OsString::from_wide(&name_wide[..len]);
 
     if let Ok(s) = os.into_string() {
@@ -128,78 +139,14 @@ unsafe extern "system" fn enum_font_proc(
 
     1 // 返回 1 表示继续枚举
 }
-
-#[tauri::command]
-fn update_tray_menu_item_title(
-    app: tauri::AppHandle,
-    quit: String,
-    show: String,
-    tooltip: String,
-    switch: String,
-) {
-    let app_handle = app.app_handle();
-    let state: State<AppState> = app.state();
-    // 获取托盘
-    let mut tray_lock = state.tray.lock().unwrap();
-    let tray = match tray_lock.as_mut() {
-        Some(tray) => tray,
-        None => {
-            eprintln!("Tray icon not found");
-            return;
-        }
-    };
-
-    // 创建菜单项
-    let quit_i = match MenuItem::with_id(app_handle, "quit", quit, true, None::<&str>) {
-        Ok(item) => item,
-        Err(e) => {
-            eprintln!("Failed to create menu item: {}", e);
-            return;
-        }
-    };
-    // 创建菜单项
-    let show_i = match MenuItem::with_id(app_handle, "show", show, true, None::<&str>) {
-        Ok(item) => item,
-        Err(e) => {
-            eprintln!("Failed to create menu item: {}", e);
-            return;
-        }
-    };
-    // 创建菜单项
-    let switch = match MenuItem::with_id(app_handle, "switch", switch, true, None::<&str>) {
-        Ok(item) => item,
-        Err(e) => {
-            eprintln!("Failed to create menu item: {}", e);
-            return;
-        }
-    };
-    let separator = match PredefinedMenuItem::separator(app_handle) {
-        Ok(item) => item,
-        Err(e) => {
-            eprintln!("Failed to create menu item: {}", e);
-            return;
-        }
-    };
-    // 创建菜单
-    let menu = match Menu::with_items(app_handle, &[&show_i, &switch, &separator, &quit_i]) {
-        Ok(menu) => menu,
-        Err(e) => {
-            eprintln!("Failed to create menu: {}", e);
-            return;
-        }
-    };
-    // 设置菜单
-    if let Err(e) = tray.set_menu(Some(menu)) {
-        eprintln!("Failed to set tray menu: {}", e);
-    } else {
-        println!("菜单项标题已更新");
-    }
-    if let Err(e) = tray.set_tooltip(Some(tooltip)) {
-        eprintln!("Failed to set tray menu: {}", e);
-    } else {
-        println!("托盘标题已更新");
-    }
+#[command]
+fn get_launch_args() -> Vec<String> {
+    // 获取命令行参数
+    let _args:Vec<String> = env::args().collect();
+     let args: Vec<String> = _args.into_iter().skip(1).collect();
+     return args;
 }
+
 #[command]
 fn get_install_path() -> Result<String, String> {
     fn to_wide_null(s: &str) -> Vec<u16> {
@@ -378,35 +325,41 @@ fn is_debug_build() -> bool {
     cfg!(debug_assertions)
 }
 
-#[tauri::command]
-async fn verify_license() -> Result<bool, String> {
-    store::verify_purchase()
-        .await
-        .map_err(|e| format!("许可证验证失败: {:?}", e))
+
+#[command]
+fn read_ini_file(path: &str, section: &str, key: &str) -> Result<String, String> {
+    let conf = Ini::load_from_file(path).map_err(|e| format!("load error: {}", e))?;
+    let sec = conf.section(Some(section)).ok_or_else(|| format!("section '{}' not found", section))?;
+    let value = sec.get(key).ok_or_else(|| format!("key '{}' not found in section '{}'", key, section))?;
+    Ok(value.to_string())
 }
 
+#[command]
+fn write_ini_file(path: &str, section: &str, key: &str, value: &str) -> Result<(), String> {
+    // 如果文件不存在就新建一个 Ini
+    let mut conf = match Ini::load_from_file(path) {
+        Ok(c) => c,
+        Err(_) => Ini::new(),
+    };
+    conf.with_section(Some(section)).set(key, value);
+    conf.write_to_file(path).map_err(|e| format!("write error: {}", e))?;
+    Ok(())
+}
+#[command]
+fn create_custom_dir(path: String) -> Result<String, String> {
+    let path_buf = PathBuf::from(&path);
+    
+    // 简单直接地创建目录，不检查任何现有条件
+    match fs::create_dir_all(&path_buf) {
+        Ok(_) => Ok(format!("目录已创建或已存在: {:?}", path_buf)),
+        Err(e) => Err(format!("创建目录失败: {}", e)),
+    }
+}
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let rt = tokio::runtime::Runtime::new().unwrap();
     rt.block_on(async {
         tauri::Builder::default()
-            .setup(|app| {
-                // 正确获取 app_handle 并克隆它
-                let app_handle = app.app_handle().clone(); // 关键修复：添加 clone()
-                tauri::async_runtime::spawn(async move {
-                    match verify_license().await {
-                        Ok(valid) => {
-                            if !valid {
-                                let _ = app_handle.emit("license-status", "请从微软商店购买正式版");
-                            }
-                        }
-                        Err(e) => {
-                            let _ = app_handle.emit("license-error", format!("验证错误: {}", e));
-                        }
-                    }
-                });
-                Ok(())
-            })
             .plugin(tauri_plugin_dialog::init())
             .plugin(tauri_plugin_fs::init())
             .plugin(tauri_plugin_os::init())
@@ -434,11 +387,8 @@ pub fn run() {
             ))
             .plugin(tauri_plugin_http::init())
             .plugin(tauri_plugin_opener::init())
-            .manage(AppState {
-                tray: Mutex::new(None),
-            })
+        
             .invoke_handler(tauri::generate_handler![
-                update_tray_menu_item_title,
                 get_epl_recent_files,
                 reveal_file,
                 get_install_path,
@@ -446,8 +396,11 @@ pub fn run() {
                 build_timestamp,
                 is_running_in_msix,
                 is_debug_build,
-                verify_license,
-                list_system_fonts
+                list_system_fonts,
+                get_launch_args,
+                read_ini_file,
+                write_ini_file,
+                create_custom_dir
             ])
             .run(tauri::generate_context!())
             .expect("error while running tauri application");

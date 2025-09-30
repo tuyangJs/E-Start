@@ -32,7 +32,6 @@ export const columns = (expandFile: boolean) => {
   // 你要插入的新列
   const extraColumn: ProColumns<TableListItem> = {
     title: '文件位置',
-    width: 60,
     dataIndex: 'path',
   };
 

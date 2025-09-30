@@ -13,6 +13,12 @@ export const tab1 = [
         url: "https://e.125.la/ciku.html"
     },
     {
+        title: "易语言知识库",
+        description:"最新易语言在线帮助手册，学习易语言的必备手册",
+        url:"https://esdn.125.la/",
+        avatar:"https://esdn.125.la/favicon.ico"
+    },
+    {
         title: "GitHub",
         description: "全球最大的开源代码托管平台，支持Git版本控制",
         avatar: "https://github.com/favicon.ico",

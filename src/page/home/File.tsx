@@ -1,9 +1,10 @@
 import { resolveResource } from '@tauri-apps/api/path';
 import { readFile, writeFile } from '@tauri-apps/plugin-fs';
 import { save } from '@tauri-apps/plugin-dialog';
-import { message, Space, Typography } from 'antd';
+import { Space, Typography } from 'antd';
 import { ModalFunc } from 'antd/es/modal/confirm';
 import { invoke } from '@tauri-apps/api/core';
+import { MessageInstance } from 'antd/es/message/interface';
 const { Text, Link } = Typography;
 const iFile = {
   Window: <Link>通过名称为 <Text code>_启动窗口</Text> 的窗口启动</Link>,
@@ -15,10 +16,11 @@ const iFile = {
  * - names: 例如 ['foo', 'bar']，对应资源里 E_dev/foo.e, E_dev/bar.e
  */
 
-export function saveEFiles(names: string[], confirm: ModalFunc,eFiles:string) {
+export function saveEFiles(names: string[], confirm: ModalFunc, eFiles: string, messageApi: MessageInstance) {
   (async () => {
+
     if (names.length === 0) {
-      message.error('未指定要保存的文件');
+      messageApi.error('未指定要保存的文件');
       return;
     }
 
@@ -73,18 +75,18 @@ export function saveEFiles(names: string[], confirm: ModalFunc,eFiles:string) {
         filters: [{ name: 'E 文件', extensions: ['e'] }],
       });
       if (!dest) {
-        message.info('已取消创建');
+        messageApi.info('已取消创建');
         return;
       }
 
       // 5. 写入目标路径
       // writeFile 接受绝对路径，也可直接：await writeFile(dest, data);
       await writeFile(dest, data);
-      message.success(`已保存到：${dest}`);
+      messageApi.success(`已保存到：${dest}`);
       invoke('open_exe', { exePath: eFiles, args: [dest] })
     } catch (err: any) {
       console.error(err);
-      message.error('保存失败：' + (err?.message || err));
+      messageApi.error('保存失败：' + (err?.message || err));
     }
   })();
 }

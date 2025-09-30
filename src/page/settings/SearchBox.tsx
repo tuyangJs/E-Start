@@ -126,7 +126,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             options={options}
             onSearch={onChange}
             style={{ width: '100%', ...style }}
-            placeholder="搜索设置"
+            placeholder="搜索设置项"
             onSelect={(val: string) => {
                 const [cat, key] = val.split('/');
                 onSelectItem(cat, key);

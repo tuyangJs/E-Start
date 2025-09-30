@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import TitleBar from "@/TitleBar";
 
-import { ConfigProvider, Layout, Modal, theme, Typography } from "antd";
+import { ConfigProvider, Layout, message, Modal, theme, Typography } from "antd";
 import { isWin11, ThemeFun } from '@/mod/ThemeConfig'
 import { WindowBg } from "@/mod/WindowCode";
 import { invoke } from "@tauri-apps/api/core";
@@ -12,27 +12,31 @@ import { useAsyncEffect } from "ahooks";
 import dayjs from "dayjs";
 import zhCN from 'antd/locale/zh_CN';
 import BlurredBackground from "@/mod/BlurredBackground";
-import { StoreCode } from "@/code";
 import PageRouter from "./Content";
 import { BrowserRouter } from "react-router-dom";
 
 import "./App.less";
 const { Paragraph, Text, Title } = Typography;
 const { Content } = Layout;
-    const config = theme.getDesignToken()
+const config = theme.getDesignToken()
 window.appWindow = new Window('main');
+
+
 const matchMedia = window.matchMedia('(prefers-color-scheme: light)');
 const inMsix = await invoke<boolean>('is_running_in_msix');
 const isDebug = await invoke<boolean>('is_debug_build');
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const loading = false;
   const { setAppMain, eFiles } = AppMainStore()
   const [themeDack, setThemeDack] = useState(!matchMedia.matches);
   const [expire, setExpire] = useState(isDebug ? false : !inMsix);
   const { setTentative, Themeconfig } = TentativeStore()
+  const [messageApi, contextHolder] = message.useMessage();
 
-
+  useEffect(() => {
+    setTentative({ messageApi })
+  }, [messageApi])
   const handleOk = () => {
     location.reload();    // 重新加载当前页面
   };
@@ -49,7 +53,7 @@ function App() {
   }
   //设置窗口材料
   useAsyncEffect(async () => {
-    if (loading) return
+
     let eFile = ''
     try {
       const eFilesLib: string = await invoke('get_install_path');
@@ -75,7 +79,8 @@ function App() {
     };
     matchMedia.addEventListener('change', handleChange);
     checkDateStatus()
-  }, [loading])
+
+  }, [])
   //同步窗口标题
   const { primaryColor, fontFamily } = AppSetStore()
 
@@ -93,6 +98,7 @@ function App() {
       theme={Themeconfig}
       locale={zhCN}
     >
+      {contextHolder}
       {
         (themeDack) &&
         <BlurredBackground
@@ -112,7 +118,7 @@ function App() {
         }}>
           <Content className="container">
             {!expire ? (
-
+   
               <PageRouter themeDack={false} />
 
             ) :
@@ -147,7 +153,6 @@ function App() {
           <Text >如果你已经安装了易语言，请先打开一次易语言再重新打开本程序。</Text>
         </Paragraph>
       </Modal>
-      <StoreCode setLoading={setLoading} />
     </ConfigProvider >
   );
 }

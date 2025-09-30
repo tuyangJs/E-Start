@@ -11,8 +11,9 @@ import { AppMainStore } from "@/mod/store";
 /* 左侧 Logo + 标题 */
 export interface LogoTitleProps {
     loading: boolean
+    style: React.CSSProperties
 }
-export const LogoTile: FC<LogoTitleProps> = ({ loading }) => {
+export const LogoTile: FC<LogoTitleProps> = ({ loading,style }) => {
     const [hoverHeader, setHoverHeader] = useState(false);
     // 当 loading 完成后才启用 MS Store 请求
     const { eFiles } = AppMainStore()
@@ -26,14 +27,15 @@ export const LogoTile: FC<LogoTitleProps> = ({ loading }) => {
     return (
         <AnimatePresence mode="wait">
             <Flex
-                className='ant-segmented ant-segmented-shape-round vague'
+                className='ant-segmented ant-segmented-shape-round liquid-glass'
                 align='center'
                 gap={6}
                 style={{
                     display: 'flex',
                     paddingInline: 8,
                     height: 32,
-                    zIndex: 1
+                    zIndex: 1,
+                    ...style
                 }}
                 onMouseEnter={() => setHoverHeader(true)}
                 onMouseLeave={() => setHoverHeader(false)}

@@ -7,6 +7,7 @@ import { JsonViewer } from './JSONTreeTool';
 import { QRCodeGenerator } from './QRCode.tsx';
 import HttpRequestTool from './http';
 import PasswordGenerator from './PasswordGenerator';
+import Moment from './moment';
 const items: TabsProps['items'] = [
     {
         key: '0',
@@ -41,6 +42,12 @@ const items: TabsProps['items'] = [
     },
     {
         key: '6',
+        label: '时间戳转换',
+        children: <Moment />,
+
+    },
+    {
+        key: '7',
         label: '密码生成',
         children: <PasswordGenerator />,
 

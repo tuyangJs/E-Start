@@ -38,12 +38,12 @@
   },
   "bundle": {
     "active": true,
-    "targets": [
-      
-    ],
+    "targets": [],
     "copyright": "Copyright © 2025 Tuyang All",
     "homepage": "https://github.com/tuyangJs/Windows_AutoTheme",
     "windows": {
+      "certificateThumbprint": "c1a3019cea5de8d7dda0f1ee98e5bf5668db46c6",
+      "timestampUrl": "http://timestamp.digicert.com",
       "nsis": {
         "languages": [
           "SimpChinese"
@@ -57,8 +57,7 @@
       "icons/icon.png"
     ],
     "resources": [
-      "E_dev" 
+      "E_dev"
     ]
   }
-  
 }

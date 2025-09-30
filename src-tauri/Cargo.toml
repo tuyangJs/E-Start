@@ -1,6 +1,6 @@
 [package]
 name = "E-Manager"
-version = "1.3.1"
+version = "1.3.3"
 description = "E-Manager"
 authors = ["you"]
 edition = "2021"
@@ -22,7 +22,7 @@ chrono = "0.4"
 [dependencies]
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
-tauri = { version = "2", features = [ "tray-icon", "image-png", "devtools" ] }
+tauri = { version = "2", features = [ "image-png",] }
 serde_json = "1"
 tauri-plugin-http = "2"
 tokio = { version = "1", features = ["rt", "macros", "full"] }
@@ -33,12 +33,12 @@ tauri-plugin-persisted-scope = "2"
 tauri-plugin-os = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
+rust-ini="0.21"
 windows = { version = "0.54.0", features = [
     "Foundation",
     "Services_Store",
     "Win32_Foundation",
     "Win32_System_Com",
-    "implement" , # 必需用于异步支持
       "Win32_Foundation",
     "Win32_Graphics_Gdi",
     "Win32_UI_WindowsAndMessaging"
