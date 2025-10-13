@@ -7,8 +7,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { useAsyncEffect } from "ahooks";
 import { extractDirectoryPath } from "@/mod/extractDirectoryPath";
 import { GetFileinfo } from "@/mod/FileGet";
-import { resolveResource } from "@tauri-apps/api/path";
-import { readFile, writeFile, remove } from "@tauri-apps/plugin-fs";
+import { remove } from "@tauri-apps/plugin-fs";
+import { createAndClickLink } from "@/mod/createAndClickLink";
 const Themeitems: { label: string; key: string }[] = [
     {
         label: '跟随系统',
@@ -82,40 +82,15 @@ const GesPage = () => {
     const selected = async () => {
         if (Istatus) {
             //安装支持库
-            try {
-                const resourcePath = await resolveResource(`E_dev/E-Manager_Code.fne`);
-                if (!resourcePath) {
-                    throw new Error("资源不存在: E-Manager_Code.fne");
-                }
-                const data = await readFile(resourcePath);
-                await writeFile(libCodePath, data);
-                const Fileinfo = await GetFileinfo(libCodePath);
-                setIstatus(!Fileinfo.isFile);
-                if (Fileinfo.isFile) {
-                    messageApi.success("支持库安装成功");
-                } else {
-                    messageApi.error("支持库安装失败，请检查资源文件是否完整");
-                }
-                //确保ini文件目录存在
-                try {
-                    const datapath = extractDirectoryPath(inipath)
-                    const iniInfo = await GetFileinfo(inipath);
-                    if (!iniInfo.isFile) {
-                        await invoke('create_custom_dir', {
-                            path: datapath
-                        });
-                        sevdata()
-                    }
-                } catch (error) {
-                    console.error(error);
-                    messageApi.error("创建配置文件目录失败，请权限与文件占用");
-                }
+            messageApi.open({
+                type: 'loading',
+                content: "将打开浏览器下载支持库文件，请将支持库文件解压到IDE `lib` 文件夹中",
+                duration: 6000,
 
-            } catch (error) {
-                console.error(error);
-                messageApi.error("安装支持库失败，请关闭易语言再次尝试，或检查资源文件是否完整");
-                return
-            }
+            })
+            setTimeout(() => {
+                createAndClickLink("https://wwuk.lanzouo.com/iE6lq38bnrdg")
+            }, 1500);
         } else {
             //卸载支持库
             try {
