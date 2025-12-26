@@ -74,5 +74,8 @@ const ThemeFun = (themeDack: boolean, winBgEffect: AppDataType['winBgEffect'] | 
 
     return Themeconfig
 }
-
-export { ThemeFun, isWin11 }
+async function changeTheme(type: any) {
+    const appWindow = window.appWindow;
+    appWindow.setTheme(type === "system" ? undefined : type);
+}
+export { ThemeFun, isWin11, changeTheme }

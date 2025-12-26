@@ -85,7 +85,6 @@ const GesPage = () => {
             messageApi.open({
                 type: 'info',
                 content: "将打开浏览器下载支持库文件，请将支持库文件解压到IDE `lib` 文件夹中",
-                duration: 6000,
 
             })
             setTimeout(() => {

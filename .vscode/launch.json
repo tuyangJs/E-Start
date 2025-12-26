@@ -4,7 +4,7 @@
             "type": "node-terminal",
             "name": "Devbug",
             "request": "launch",
-            "command": "npm start",
+            "command": "bun start",
             "cwd": "${workspaceFolder}"
         }
     ]

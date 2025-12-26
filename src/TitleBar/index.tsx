@@ -9,13 +9,14 @@ import { theme } from "antd";
 import { restoreStateCurrent, StateFlags } from '@tauri-apps/plugin-window-state';
 import { useNavigate } from 'react-router-dom';
 import usePageTitle from '@/mod/PageTitle';
-import { useAsyncEffect, useRequest, useUpdateEffect } from 'ahooks';
+import { useAsyncEffect, useRequest } from 'ahooks';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TitleButton } from './TitleButton';
 import { Navigation } from './Navigation';
 import { LogoTile } from './LogoTitle';
 import { AppSetStore } from '@/mod/store';
 import { useNavigationState } from './useNavigationState';
+import { changeTheme } from '@/mod/ThemeConfig';
 
 const config = theme.getDesignToken()
 interface Props {
@@ -40,7 +41,7 @@ const upWindowTitle = async (PageTitle: string) => {
 let times: any = null
 const App: React.FC<Props> = ({ themeDack, loading }) => {
     const navigate = useNavigate();
-    const { TouchTitleBtn, TouchOverlay, theme } = AppSetStore()
+    const { TouchTitleBtn, TouchOverlay } = AppSetStore()
     const [isMaximized, setisMaximized] = useState(false)
     const [hoverBtn, setHoverBtn] = useState(!TouchTitleBtn);
     const FULL_BTN_COUNT = TitleButton(isMaximized).length;
@@ -76,16 +77,8 @@ const App: React.FC<Props> = ({ themeDack, loading }) => {
     useAsyncEffect(async () => {
         run(PageTitle)
     }, [PageTitle])
-    async function changeTheme(type: any) {
-        const appWindow = window.appWindow;
-        appWindow.setTheme(type === "system" ? undefined : type);
-    }
-    useUpdateEffect(() => {
-        changeTheme(theme)
-    }, [theme])
-    useEffect(() => {
-        changeTheme(theme)
-    }, [])
+
+
 
     return (
 

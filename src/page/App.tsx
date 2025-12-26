@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import TitleBar from "@/TitleBar";
 
 import { ConfigProvider, Layout, message, Modal, theme, Typography } from "antd";
-import { isWin11, ThemeFun } from '@/mod/ThemeConfig'
+import { changeTheme, isWin11, ThemeFun } from '@/mod/ThemeConfig'
 import { WindowBg } from "@/mod/WindowCode";
 import { invoke } from "@tauri-apps/api/core";
 import { GetFileinfo, getParentPath } from "@/mod/FileGet";
@@ -26,7 +26,8 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const loading = false;
   const { setAppMain, eFiles } = AppMainStore()
-  const [themeDack, setThemeDack] = useState(!matchMedia.matches);
+  const { theme } = AppSetStore()
+  const [themeDack, setThemeDack] = useState((theme === "system") ? !matchMedia.matches : (theme ==="dark") ? true : false);
   const { setTentative, Themeconfig } = TentativeStore()
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -40,10 +41,11 @@ function App() {
   const handleCancel = () => {
     setIsModalOpen(false)
   };
-
+  useEffect(() => {
+    changeTheme(theme)
+  }, [theme])
   //设置窗口材料
   useAsyncEffect(async () => {
-
     let eFile = ''
     try {
       const eFilesLib: string = await invoke('get_install_path');
@@ -105,7 +107,7 @@ function App() {
           padding: 0,
         }}>
           <Content className="container">
-             <PageRouter themeDack={false} />
+            <PageRouter themeDack={false} />
           </Content>
         </Layout>
       </BrowserRouter>
