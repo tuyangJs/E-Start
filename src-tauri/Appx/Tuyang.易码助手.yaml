@@ -4,7 +4,7 @@ PackageName: 易码助手
 
 PublisherName: Tuyang
 
-PackageVersion: 1.3.6.0
+PackageVersion: 1.3.8.0
 
 EligibleForConversion: Yes
 
@@ -29,7 +29,7 @@ Edition: Microsoft Windows 11 专业工作站版
 
 MinimumOSVersion: 25H2
 
-MinimumOSBuild: 26200.6725
+MinimumOSBuild: 26200.7462
 
 Architecture: 64
 

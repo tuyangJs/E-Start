@@ -57,15 +57,15 @@
 ## 开发调试
 安装依赖
 ```
-npm install
+bun install
 ```
 调试
 ```
-npm start
+bun start
 ```
 编译
 ```
-npm run tauri build
+bun run tauri build
 ```
 
 ## 联系作者
